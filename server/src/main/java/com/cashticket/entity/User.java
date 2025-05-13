@@ -1,10 +1,9 @@
 package com.cashticket.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -14,10 +13,21 @@ import lombok.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(length = 50)
+    private String id;
 
-    private String name;
-
+    @Column(length = 100, nullable = false, unique = true)
     private String email;
+
+    @Column(length = 100, nullable = false)
+    private String password;
+
+    @Column(length = 100, nullable = false)
+    private String nickname;
+
+    @Column(nullable = false)
+    private LocalDate birthDay;
+
+    @Column(length = 15)
+    private String phoneNumber;
 }
