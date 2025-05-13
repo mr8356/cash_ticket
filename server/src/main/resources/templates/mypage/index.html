@@ -20,10 +20,11 @@
     <div class="card mb-5 shadow-sm">
         <div class="card-body">
             <h5 class="card-title">회원 정보</h5>
-            <p class="mb-1"><strong>아이디:</strong> <span th:text="동현">동현</span></p>
-            <p class="mb-1"><strong>이름:</strong> <span th:text="${user.name}">홍길동</span></p>
+            <p class="mb-1"><strong>아이디:</strong> <span th:text="${user.id}">동현</span></p>
+            <p class="mb-1"><strong>이름:</strong> <span th:text="${user.nickname}">홍길동</span></p>
             <p class="mb-1"><strong>이메일:</strong> <span th:text="${user.email}">example@email.com</span></p>
-            <p class="mb-1"><strong>전화번호:</strong> <span th:text="${user.phone}">010-1234-5678</span></p>
+            <p class="mb-1"><strong>전화번호:</strong> <span th:text="${user.phoneNumber}">010-1234-5678</span></p>
+            <p class="mb-1"><strong>생년월일:</strong> <span th:text="${user.birthDay}">1990-01-01</span></p>
         </div>
     </div>
 
