@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>예매 정보</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .ticket-card {
+            border-radius: 1rem;
+        }
+        .ticket-detail p {
+            margin-bottom: 0.5rem;
+        }
+        .badge-title {
+            font-size: 0.9rem;
+            background-color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <!-- 페이지 헤더 -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">🎟️ 예매 정보 확인</h2>
+        <p class="text-muted">내가 예매한 티켓 정보를 아래에서 확인하세요.</p>
+    </div>
+
+    <!-- 예매 정보 카드 -->
+    <div class="card shadow-sm bg-white ticket-card p-4">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+            <div>
+                <h4 class="fw-bold mb-1">뮤지컬 &lt;레미제라블&gt;</h4>
+                <span class="badge badge-title text-white">예매 완료</span>
+            </div>
+            <div class="text-end">
+                <small class="text-muted">예매번호</small>
+                <div class="fw-semibold" th:text="${reservation.id}">1234567890</div>
+            </div>
+        </div>
+
+        <!-- 세부 정보 -->
+        <div class="ticket-detail">
+            <p><strong>📅 날짜:</strong> <span th:text="${reservation.date}">2025-05-10 (토) 19:30</span></p>
+            <p><strong>🪑 좌석:</strong> <span th:text="${reservation.seat}">R석 2열 8번</span></p>
+            <p><strong>📍 장소:</strong> <span th:text="${reservation.venue}">서울 예술의전당 오페라극장</span></p>
+            <p><strong>💳 결제 금액:</strong> <span th:text="${reservation.amount}">120,000원</span></p>
+            <p><strong>💰 결제 수단:</strong> <span th:text="${reservation.payment}">신용카드</span></p>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="mt-4 d-flex justify-content-between">
+            <a href="/mypage/reservations" class="btn btn-outline-secondary">← 예매 내역 목록</a>
+            <a href="/cancel/1234567890" class="btn btn-danger">예매 취소</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
