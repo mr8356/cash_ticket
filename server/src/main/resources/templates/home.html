@@ -79,23 +79,42 @@
         <div class="col"><div>👶</div><div>아동/가족</div></div>
         <div class="col"><div>🖼️</div><div>전시/행사</div></div>
         <div class="col"><div>🌈</div><div>TOPING</div></div>
+        <div class="col">
+            <a href="/auction" class="text-decoration-none text-dark">
+                <div>🎯</div>
+                <div>경매</div>
+            </a>
+        </div>
     </div>
 </div>
 
 <!-- 장르별 랭킹 탭 -->
 <div class="container mt-5">
     <h5 class="fw-bold">장르별 랭킹</h5>
-    <ul class="nav nav-pills my-3" id="rankingTabs">
-        <li class="nav-item"><a class="nav-link active" href="#">뮤지컬</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">콘서트</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">스포츠</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">전시/행사</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">클래식</a></li>
+
+    <!-- 탭 메뉴 -->
+    <ul class="nav nav-pills my-3" id="genreTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="musical-tab" data-bs-toggle="pill" data-bs-target="#musical" type="button" role="tab">뮤지컬</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="concert-tab" data-bs-toggle="pill" data-bs-target="#concert" type="button" role="tab">콘서트</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="sports-tab" data-bs-toggle="pill" data-bs-target="#sports" type="button" role="tab">스포츠</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="exhibition-tab" data-bs-toggle="pill" data-bs-target="#exhibition" type="button" role="tab">전시/행사</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="classic-tab" data-bs-toggle="pill" data-bs-target="#classic" type="button" role="tab">클래식</button>
+        </li>
     </ul>
 
-    <!-- 썸네일 예시 -->
-    <div class="row">
-        <div class="col-md-4">
+    <!-- 탭 내용 -->
+    <div class="tab-content" id="genreTabContent">
+        <!-- 뮤지컬 -->
+        <div class="tab-pane fade show active" id="musical" role="tabpanel">
             <div class="card">
                 <img src="/img/musical1.jpg" class="card-img-top" alt="뮤지컬1">
                 <div class="card-body">
@@ -103,8 +122,70 @@
                 </div>
             </div>
         </div>
-        <!-- 더 추가 가능 -->
+
+        <!-- 콘서트 -->
+        <div class="tab-pane fade" id="concert" role="tabpanel">
+            <div class="card">
+                <img src="/img/concert1.jpg" class="card-img-top" alt="콘서트1">
+                <div class="card-body">
+                    <h6 class="card-title">콘서트 A</h6>
+                </div>
+            </div>
+        </div>
+
+        <!-- 스포츠 -->
+        <div class="tab-pane fade" id="sports" role="tabpanel">
+            <div class="card">
+                <img src="/img/sports1.jpg" class="card-img-top" alt="스포츠1">
+                <div class="card-body">
+                    <h6 class="card-title">스포츠 A</h6>
+                </div>
+            </div>
+        </div>
+
+        <!-- 전시/행사 -->
+        <div class="tab-pane fade" id="exhibition" role="tabpanel">
+            <div class="card">
+                <img src="/img/exhibition1.jpg" class="card-img-top" alt="전시1">
+                <div class="card-body">
+                    <h6 class="card-title">전시 A</h6>
+                </div>
+            </div>
+        </div>
+
+        <!-- 클래식 -->
+        <div class="tab-pane fade" id="classic" role="tabpanel">
+            <div class="card">
+                <img src="/img/classic1.jpg" class="card-img-top" alt="클래식1">
+                <div class="card-body">
+                    <h6 class="card-title">클래식 A</h6>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+
+<!-- 오픈 예정 공연 섹션 -->
+<div class="container mt-5">
+    <h5 class="fw-bold mb-4">오픈 예정</h5>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <!-- 공연 카드 반복 -->
+        <div class="col" th:each="concert : ${concertList}">
+            <div class="card h-100">
+                <img th:src="${concert.posterImgURL}" class="card-img-top" th:alt="${concert.title + ' 포스터'}">
+                <div class="card-body">
+                    <h6 class="text-primary fw-bold" th:text="${#temporals.format(concert.dateTime, 'MM.dd(E) HH:mm')}">공연일시</h6>
+                    <p class="mb-1 fw-semibold" th:text="${concert.title}">공연 제목</p>
+                    <p class="text-muted">일반예매</p>
+                    <span class="badge bg-danger" th:if="${concert.isAuction}">HOT</span>
+                    <span class="badge bg-primary">단독판매</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
