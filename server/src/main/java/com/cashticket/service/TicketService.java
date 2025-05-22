@@ -36,7 +36,7 @@ public class TicketService {
 
     // TODO: 찜 추가/삭제
     public boolean toggleConcertLike(Long concertId, User user) {
-        Optional<LikeTable> existing = likeRepository.findByConcertIdAndUserId(concertId, user.getUserId());
+        Optional<LikeTable> existing = likeRepository.findByConcertIdAndUser_Id(concertId, user.getId());
         Concert concert = concertRepository.getReferenceById(concertId);
 
         if (existing.isPresent()) {
