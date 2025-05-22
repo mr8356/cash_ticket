@@ -1,5 +1,5 @@
 redis:
-  host: ${AWS_EC2_REDIS_HOST}        # Redis 서버 호스트 (AWS EC2 호스트 이름 또는 IP)
+  host: ${REDIS_HOST}        # Redis 서버 호스트 (AWS EC2 호스트 이름 또는 IP)
   port: 6379                        # Redis 포트 (기본값: 6379)
   password: ${REDIS_PASSWORD}       # Redis 인증 비밀번호 (없다면 생략 가능)
   timeout: 2000                     # 연결 타임아웃 (ms 단위)
