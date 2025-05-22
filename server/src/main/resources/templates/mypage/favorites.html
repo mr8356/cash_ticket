@@ -27,15 +27,18 @@
     <!-- 찜 리스트 -->
     <div class="row g-4">
         <!-- 찜 항목 반복 -->
-        <div class="col-md-4" th:each="item : ${wishlist}">
+        <div class="col-md-4" th:each="concert : ${wishlist}">
             <div class="card wishlist-card shadow-sm">
-                <img th:src="@{/img/placeholder.jpg}" alt="포스터" class="wishlist-img w-100" />
+                <img th:src="${concert.posterImgURL}" alt="포스터" class="wishlist-img w-100" />
                 <div class="card-body">
-                    <h5 class="card-title" th:text="${item.title}">공연 제목</h5>
-                    <p class="card-text text-muted mb-3" th:text="${item.date}">2025-06-01 ~ 2025-07-15</p>
+                    <h5 class="card-title" th:text="${concert.title}">공연 제목</h5>
+                    <p class="card-text mb-1" th:text="${concert.artist}">아티스트</p>
+                    <p class="card-text mb-1" th:text="${concert.place}">장소</p>
+                    <p class="card-text text-muted mb-3" th:text="${#temporals.format(concert.dateTime, 'yyyy-MM-dd HH:mm')}">2025-06-01</p>
                     <div class="d-flex justify-content-between">
-                        <a th:href="@{/reserve/{id}(id=${item.id})}" class="btn btn-sm btn-primary">예매하기</a>
-                        <a th:href="@{/wishlist/delete/{id}(id=${item.id})}" class="btn btn-sm btn-outline-danger">삭제</a>
+                        <a th:if="${concert.isAuction}" th:href="@{/auction/{id}(id=${concert.id})}" class="btn btn-sm btn-primary">경매 참여</a>
+                        <a th:unless="${concert.isAuction}" th:href="@{/reserve/{id}(id=${concert.id})}" class="btn btn-sm btn-primary">예매하기</a>
+                        <a th:href="@{/wishlist/delete/{id}(id=${concert.id})}" class="btn btn-sm btn-outline-danger">삭제</a>
                     </div>
                 </div>
             </div>
