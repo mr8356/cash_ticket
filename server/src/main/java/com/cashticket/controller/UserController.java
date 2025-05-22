@@ -15,12 +15,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {	
-	private final Long id = 1L;
 	private final UserService userService;
 
 	@GetMapping("/mypage")
-	public String mypage(Model model) {
-		User user = userService.getUserById(id);
+	public String mypage(@CurrentUser User user, Model model) {
 		model.addAttribute("user", user);
 		return "mypage";
 	}
