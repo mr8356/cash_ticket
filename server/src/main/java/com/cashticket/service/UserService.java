@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 	private final UserRepository userRepository;
 
-<<<<<<< HEAD
     public User getUserById(Long id) {
         // 테스트용 더미 유저 데이터 반환
         if (id == 1L) {
@@ -32,7 +31,6 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-=======
 	@Transactional
 	public User register(User user) {
 		// 이메일 중복 체크
@@ -68,6 +66,5 @@ public class UserService {
 		return userRepository.findByUserId(userId)
 				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 	}
->>>>>>> b80605ab2163a406be438e20585c45723658b4e7
 
 }
