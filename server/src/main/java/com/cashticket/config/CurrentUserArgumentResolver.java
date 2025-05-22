@@ -36,7 +36,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
         if (session != null) {
             // Redis 세션에서 사용자 ID 조회
             String sessionId = session.getId();
-            String userId = redisTemplate.opsForValue().get("spring:session:" + sessionId + ":userId");
+            String userId = redisTemplate.opsForValue().get("spring:session:sessions:" + sessionId + ":userId");
             
             if (userId != null) {
                 return userService.getUserById(Long.parseLong(userId));

@@ -11,17 +11,37 @@ redis:
 server:
   port: 8080
 spring:
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
   session:
     store-type: redis
     redis:
       namespace: spring:session
       flush-mode: on_save
   jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
     properties:
       hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+        order_inserts: true
+        order_updates: true
         globally_quoted_identifiers: true
-        ddl-auto: none;
-        show-sql: true
+        hbm2ddl:
+          auto: create-drop
+          schema_generation:
+            create_source: metadata
+            create_order: tables-then-constraints
+            scripts:
+              action: create
+              create-target: create.sql
+              drop-target: drop.sql
         cache:
           use_query_cache: false
           use_second_level_cache: false
@@ -32,6 +52,6 @@ spring:
         generate_statistics: false
   datasource:
     driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.h2.Driver}
-    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:testdb}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
