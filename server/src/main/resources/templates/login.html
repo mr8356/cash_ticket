@@ -17,11 +17,11 @@
 <!-- 로그인 폼 -->
 <div class="container d-flex justify-content-center">
     <div class="card shadow-sm p-4 w-100" style="max-width: 500px;">
-        <form th:action="@{/login}" method="post">
+        <form th:action="@{/auth/login}" method="post">
             <!-- 아이디 -->
             <div class="mb-3">
-                <label for="username" class="form-label">아이디</label>
-                <input type="text" class="form-control" id="username" name="username" required>
+                <label for="userId" class="form-label">아이디</label>
+                <input type="text" class="form-control" id="userId" name="userId" required>
             </div>
 
             <!-- 비밀번호 -->

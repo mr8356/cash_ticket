@@ -1,7 +1,7 @@
 redis:
-  host: ${REDIS_HOST}        # Redis 서버 호스트 (AWS EC2 호스트 이름 또는 IP)
+  host: ${REDIS_HOST:localhost}        # Redis 서버 호스트 (AWS EC2 호스트 이름 또는 IP)
   port: 6379                        # Redis 포트 (기본값: 6379)
-  password: ${REDIS_PASSWORD}       # Redis 인증 비밀번호 (없다면 생략 가능)
+  password: ${REDIS_PASSWORD:1234}       # Redis 인증 비밀번호 (없다면 생략 가능)
   timeout: 2000                     # 연결 타임아웃 (ms 단위)
   lettuce:
     pool:
@@ -11,6 +11,11 @@ redis:
 server:
   port: 8080
 spring:
+  session:
+    store-type: redis
+    redis:
+      namespace: spring:session
+      flush-mode: on_save
   jpa:
     properties:
       hibernate:

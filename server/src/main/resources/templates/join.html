@@ -17,14 +17,20 @@
 <!-- 회원가입 폼 -->
 <div class="container d-flex justify-content-center">
     <div class="card shadow-sm p-4 w-100" style="max-width: 500px;">
-        <form action="/register" method="post">
+        <form action="/auth/register" method="post">
             <!-- 아이디 -->
             <div class="mb-3">
-                <label for="username" class="form-label">아이디</label>
+                <label for="userId" class="form-label">아이디</label>
                 <div class="input-group">
-                    <input type="text" class="form-control" id="username" name="username" placeholder="영문+숫자 조합" required>
+                    <input type="text" class="form-control" id="userId" name="userId" placeholder="영문+숫자 조합" required>
                     <button class="btn btn-outline-secondary" type="button">중복 확인</button>
                 </div>
+            </div>
+
+            <!-- 이메일 -->
+            <div class="mb-3">
+                <label for="email" class="form-label">이메일</label>
+                <input type="email" class="form-control" id="email" name="email" required>
             </div>
 
             <!-- 비밀번호 -->
@@ -33,16 +39,22 @@
                 <input type="password" class="form-control" id="password" name="password" placeholder="영문, 숫자, 특수문자 포함 8자 이상" required>
             </div>
 
-            <!-- 이름 -->
+            <!-- 닉네임 -->
             <div class="mb-3">
-                <label for="name" class="form-label">이름</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <label for="nickname" class="form-label">닉네임</label>
+                <input type="text" class="form-control" id="nickname" name="nickname" required>
             </div>
 
             <!-- 생년월일 -->
             <div class="mb-3">
-                <label for="birth" class="form-label">생년월일</label>
-                <input type="date" class="form-control" id="birth" name="birth" required>
+                <label for="birthDay" class="form-label">생년월일</label>
+                <input type="date" class="form-control" id="birthDay" name="birthDay" required>
+            </div>
+
+            <!-- 전화번호 -->
+            <div class="mb-3">
+                <label for="phoneNumber" class="form-label">전화번호</label>
+                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="010-0000-0000">
             </div>
 
             <!-- 가입 버튼 -->
