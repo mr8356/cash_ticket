@@ -1,12 +1,14 @@
 package com.cashticket.service;
 
 import com.cashticket.entity.Concert;
+import com.cashticket.entity.LikeTable;
 import com.cashticket.repository.ConcertRepository;
 import com.cashticket.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +23,17 @@ public class TicketService {
     }
 
     // TODO: 콘서트 상세 조회
+    public Concert getConcertDetail(Long concertId) {
+        return concertRepository.findById(concertId)
+                .orElseThrow(() -> new RuntimeException("콘서트를 찾을 수 없습니다."));
+    }
 
     // TODO: 콘서트 검색
 
+
     // TODO: 찜 추가/삭제
+
+
 
     // TODO: 찜 여부 확인
 

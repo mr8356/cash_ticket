@@ -22,8 +22,13 @@ public class TicketController {
     }
 
     // TODO: 콘서트 상세 조회
+    @GetMapping("/{concertId}")
+    public ResponseEntity<Concert> getConcertDetail(@PathVariable Long concertId) {
+        return ResponseEntity.ok(ticketService.getConcertDetail(concertId));
+    }
 
     // TODO: 콘서트 검색
+
 
     // TODO: 찜 추가/삭제
 

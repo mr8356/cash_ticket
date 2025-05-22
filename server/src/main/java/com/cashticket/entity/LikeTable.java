@@ -21,4 +21,5 @@ public class LikeTable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "concert_id", nullable = false)
     private Concert concert;
+
 } 
