@@ -39,15 +39,15 @@
         <div class="row g-0">
             <!-- 포스터 -->
             <div class="col-md-5 text-center p-3">
-                <img th:src="@{/img/poster_sample.jpg}" alt="포스터 이미지" class="poster-img w-100" />
+                <img th:src="${concert.posterImgURL}" alt="포스터 이미지" class="poster-img w-100" />
             </div>
             <!-- 상세 정보 -->
             <div class="col-md-7 p-4">
                 <h5 class="mb-3">📍 장소</h5>
-                <p th:text="${concert.venue}">예술의 전당 콘서트홀</p>
+                <p th:text="${concert.place}">예술의 전당 콘서트홀</p>
 
                 <h5 class="mb-3">📅 날짜 & 시간</h5>
-                <p th:text="${concert.datetime}">2025-06-25 (수) 19:30</p>
+                <p th:text="${#temporals.format(concert.dateTime, 'yyyy-MM-dd (E) HH:mm')}">2025-06-25 (수) 19:30</p>
 
                 <h5 class="mb-3">🎶 장르 / 카테고리</h5>
                 <p th:text="${concert.category}">팝 / 라이브 콘서트</p>
@@ -77,7 +77,8 @@
 
         <!-- 예매 및 목록 -->
         <a href="/concerts" class="btn btn-outline-secondary">← 목록으로 돌아가기</a>
-        <a th:href="@{/reserve/{id}(id=${concert.id})}" class="btn btn-primary">예매하기</a>
+        <a th:if="${!concert.isAuction}" th:href="@{/reserve/{id}(id=${concert.id})}" class="btn btn-primary">예매하기</a>
+        <a th:if="${concert.isAuction}" th:href="@{/auction/{id}(id=${concert.id})}" class="btn btn-primary">경매 참여하기</a>
     </div>
 
 </div>

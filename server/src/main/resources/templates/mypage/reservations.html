@@ -33,7 +33,7 @@
     <div class="card shadow-sm bg-white ticket-card p-4">
         <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
             <div>
-                <h4 class="fw-bold mb-1">뮤지컬 &lt;레미제라블&gt;</h4>
+                <h4 class="fw-bold mb-1" th:text="${concert.title}">공연 제목</h4>
                 <span class="badge badge-title text-white">예매 완료</span>
             </div>
             <div class="text-end">
@@ -44,9 +44,11 @@
 
         <!-- 세부 정보 -->
         <div class="ticket-detail">
-            <p><strong>📅 날짜:</strong> <span th:text="${reservation.date}">2025-05-10 (토) 19:30</span></p>
+            <p><strong>👤 아티스트:</strong> <span th:text="${concert.artist}">아티스트명</span></p>
+            <p><strong>📅 날짜:</strong> <span th:text="${#temporals.format(concert.dateTime, 'yyyy-MM-dd (E) HH:mm')}">공연 일시</span></p>
             <p><strong>🪑 좌석:</strong> <span th:text="${reservation.seat}">R석 2열 8번</span></p>
-            <p><strong>📍 장소:</strong> <span th:text="${reservation.venue}">서울 예술의전당 오페라극장</span></p>
+            <p><strong>📍 장소:</strong> <span th:text="${concert.place}">공연장</span></p>
+            <p><strong>🎭 카테고리:</strong> <span th:text="${concert.category}">카테고리</span></p>
             <p><strong>💳 결제 금액:</strong> <span th:text="${reservation.amount}">120,000원</span></p>
             <p><strong>💰 결제 수단:</strong> <span th:text="${reservation.payment}">신용카드</span></p>
         </div>
