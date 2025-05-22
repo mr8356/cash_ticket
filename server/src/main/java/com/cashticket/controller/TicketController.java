@@ -1,6 +1,8 @@
 package com.cashticket.controller;
 
+import com.cashticket.config.CurrentUser;
 import com.cashticket.entity.Concert;
+import com.cashticket.entity.User;
 import com.cashticket.service.TicketService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -38,9 +40,8 @@ public class TicketController {
     @PostMapping("/{concertId}/like")
     public ResponseEntity<String> toggleConcertLike(@PathVariable Long concertId,
                                                     @RequestParam boolean like,
-                                                    HttpSession session) {
-        String userId = (String) session.getAttribute("userId");
-        boolean result = ticketService.toggleConcertLike(concertId, userId);
+                                                    @CurrentUser User user) {
+        boolean result = ticketService.toggleConcertLike(concertId, user);
         return ResponseEntity.ok(result ? (like ? "찜 완료" : "찜 취소") : "처리 실패");
     }
     // TODO: 찜 여부 확인

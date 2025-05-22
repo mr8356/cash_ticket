@@ -23,7 +23,7 @@ public class Concert {
     @Column(length = 30, nullable = false)
     private String artist;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 1000)
     private String posterImgURL;
 
     @Column(length = 100, nullable = false)
@@ -35,10 +35,10 @@ public class Concert {
     @Column(nullable = false)
     private LocalDateTime dateTime;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 2000)
     private String description;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 100)
     private String category;
 
     @Column(nullable = false)

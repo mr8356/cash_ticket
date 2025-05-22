@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>콘서트 정보</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .poster-img {
+            max-height: 360px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .like-button {
+            font-size: 1.5rem;
+            color: crimson;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        .like-text {
+            font-size: 1rem;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container py-5">
+
+    <!-- 제목 영역 -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold" th:text="${concert.title}">[콘서트 제목]</h2>
+        <p class="text-muted" th:text="'by ' + ${concert.artist}">아티스트 이름</p>
+    </div>
+
+    <!-- 콘서트 정보 카드 -->
+    <div class="card shadow-sm mb-5">
+        <div class="row g-0">
+            <!-- 포스터 -->
+            <div class="col-md-5 text-center p-3">
+                <img th:src="${concert.posterImgURL}" alt="포스터 이미지" class="poster-img w-100" />
+            </div>
+            <!-- 상세 정보 -->
+            <div class="col-md-7 p-4">
+                <h5 class="mb-3">📍 장소</h5>
+                <p th:text="${concert.place}">예술의 전당 콘서트홀</p>
+
+                <h5 class="mb-3">📅 날짜 & 시간</h5>
+                <p th:text="${#temporals.format(concert.dateTime, 'yyyy-MM-dd (E) HH:mm')}">2025-06-25 (수) 19:30</p>
+
+                <h5 class="mb-3">🎶 장르 / 카테고리</h5>
+                <p th:text="${concert.category}">팝 / 라이브 콘서트</p>
+
+                <!-- 찜하기 버튼 오른쪽 하단 -->
+                <div class="position-absolute bottom-0 end-0 p-3">
+                    <button id="likeBtn" class="like-button" onclick="toggleLike()">
+                        <span id="heartIcon">♡</span>
+                        <span class="like-text">찜하기</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상세 설명 -->
+    <div class="card p-4 shadow-sm bg-white">
+        <h5 class="fw-bold mb-3">📄 콘서트 상세 설명</h5>
+        <p th:text="${concert.description}">
+            이 공연은 세계적인 팝 아티스트가 선보이는 단독 콘서트입니다. 화려한 무대와 생생한 라이브를 경험해보세요!
+        </p>
+    </div>
+
+    <!-- 하단 버튼 -->
+    <div class="text-end mt-4 d-flex justify-content-end align-items-center gap-3">
+
+
+        <!-- 예매 및 목록 -->
+        <a href="/concerts" class="btn btn-outline-secondary">← 목록으로 돌아가기</a>
+        <a th:if="${!concert.isAuction}" th:href="@{/reserve/{id}(id=${concert.id})}" class="btn btn-primary">예매하기</a>
+        <a th:if="${concert.isAuction}" th:href="@{/auction/{id}(id=${concert.id})}" class="btn btn-primary">경매 참여하기</a>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let liked = false;
+
+    function toggleLike() {
+        liked = !liked;
+        const heart = document.getElementById("heartIcon");
+        heart.textContent = liked ? '♥' : '♡';
+
+        // 추후 서버 연동 시 fetch() 등으로 전송 가능
+        console.log("찜 상태:", liked);
+    }
+</script>
+</body>
+</html>
