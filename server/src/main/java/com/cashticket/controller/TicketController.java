@@ -28,7 +28,10 @@ public class TicketController {
     }
 
     // TODO: 콘서트 검색
-
+    @GetMapping("/search")
+    public ResponseEntity<List<Concert>> searchConcerts(@RequestParam String keyword) {
+        return ResponseEntity.ok(ticketService.searchConcerts(keyword));
+    }
 
     // TODO: 찜 추가/삭제
 

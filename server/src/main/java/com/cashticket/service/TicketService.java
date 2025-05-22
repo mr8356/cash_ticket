@@ -29,7 +29,9 @@ public class TicketService {
     }
 
     // TODO: 콘서트 검색
-
+    public List<Concert> searchConcerts(String keyword) {
+        return concertRepository.findByTitleContainingIgnoreCaseOrArtistContainingIgnoreCase(keyword, keyword);
+    }
 
     // TODO: 찜 추가/삭제
 
