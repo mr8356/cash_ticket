@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface ConcertRepository extends JpaRepository<Concert, Long> {
 
     // TODO: 콘서트 검색 기능용 쿼리 메서드 추가 예정
+
 }

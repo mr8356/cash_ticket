@@ -1,9 +1,12 @@
 package com.cashticket.service;
 
+import com.cashticket.entity.Concert;
 import com.cashticket.repository.ConcertRepository;
 import com.cashticket.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -13,6 +16,9 @@ public class TicketService {
     private final LikeRepository likeRepository;
 
     // TODO: 콘서트 목록 조회
+    public List<Concert> getConcertList() {
+        return concertRepository.findAll();
+    }
 
     // TODO: 콘서트 상세 조회
 
@@ -23,4 +29,5 @@ public class TicketService {
     // TODO: 찜 여부 확인
 
     // TODO: 찜 목록 조회
+
 }
