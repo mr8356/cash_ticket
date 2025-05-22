@@ -2,6 +2,7 @@ package com.cashticket.service;
 
 import com.cashticket.entity.Concert;
 import com.cashticket.entity.LikeTable;
+import com.cashticket.entity.User;
 import com.cashticket.repository.ConcertRepository;
 import com.cashticket.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +35,23 @@ public class TicketService {
     }
 
     // TODO: 찜 추가/삭제
+    public boolean toggleConcertLike(Long concertId, User user) {
+        Optional<LikeTable> existing = likeRepository.findByConcertIdAndUserId(concertId, user);
+        Concert concert = concertRepository.getReferenceById(concertId);
 
+        if (existing.isPresent()) {
+            likeRepository.delete(existing.get());
+            return false; // 찜 취소됨
+        } else {
+            LikeTable newLike = LikeTable.builder()
+                    .concert(concert)
+                    .user(user)
+                    .build();
 
+            likeRepository.save(newLike);
+            return true; // 찜 추가됨
+        }
+    }
 
     // TODO: 찜 여부 확인
 

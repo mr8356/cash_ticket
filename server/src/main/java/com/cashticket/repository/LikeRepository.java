@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface LikeRepository extends JpaRepository<LikeTable, Long> {
 
     // TODO: 찜 여부 확인, 사용자별 찜 목록 조회 기능 추가 예정
-
+    Optional<LikeTable> findByConcertIdAndUserId(Long concertId, String userId);
 
 }

@@ -2,6 +2,7 @@ package com.cashticket.controller;
 
 import com.cashticket.entity.Concert;
 import com.cashticket.service.TicketService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,14 @@ public class TicketController {
     }
 
     // TODO: 찜 추가/삭제
-
+    @PostMapping("/{concertId}/like")
+    public ResponseEntity<String> toggleConcertLike(@PathVariable Long concertId,
+                                                    @RequestParam boolean like,
+                                                    HttpSession session) {
+        String userId = (String) session.getAttribute("userId");
+        boolean result = ticketService.toggleConcertLike(concertId, userId);
+        return ResponseEntity.ok(result ? (like ? "찜 완료" : "찜 취소") : "처리 실패");
+    }
     // TODO: 찜 여부 확인
 
     // TODO: 찜 목록 조회
