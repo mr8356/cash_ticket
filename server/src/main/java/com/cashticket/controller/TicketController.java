@@ -72,6 +72,12 @@ public class TicketController {
         return ResponseEntity.ok(result ? (like ? "찜 완료" : "찜 취소") : "처리 실패");
     }
     // TODO: 찜 여부 확인
+    @GetMapping("/likes")
+    public String getUserLikedConcerts(@CurrentUser User user, Model model) {
+        List<Concert> likedConcerts = ticketService.getUserLikedConcerts(user.getId());
+        model.addAttribute("likedConcerts", likedConcerts);
+        return "ticket/likeList"; // templates/ticket/likeList.html 로 렌더링
+    }
 
     // TODO: 찜 목록 조회
 

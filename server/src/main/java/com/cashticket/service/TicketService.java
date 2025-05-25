@@ -8,8 +8,10 @@ import com.cashticket.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +56,13 @@ public class TicketService {
     }
 
     // TODO: 찜 여부 확인
+    public List<Concert> getUserLikedConcerts(Long userId) {
+        List<LikeTable> likes = likeRepository.findAllByUserId(userId);
+
+        return likes.stream()
+                .map(LikeTable::getConcert)
+                .collect(Collectors.toList());
+    }
 
     // TODO: 찜 목록 조회
 
