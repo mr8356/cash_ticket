@@ -76,7 +76,7 @@ public class TicketController {
     public String getUserLikedConcerts(@CurrentUser User user, Model model) {
         List<Concert> likedConcerts = ticketService.getUserLikedConcerts(user.getId());
         model.addAttribute("likedConcerts", likedConcerts);
-        return "ticket/likeList"; // templates/ticket/likeList.html 로 렌더링
+        return "mypage/favorites"; // templates/mypage/favorites.html 로 렌더링
     }
 
     // TODO: 찜 목록 조회
