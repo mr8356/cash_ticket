@@ -52,7 +52,7 @@
     <div class="d-flex align-items-center gap-3">
         <a href="/login" class="text-decoration-none text-secondary">로그인</a>
         <a href="/join" class="text-decoration-none text-secondary">회원가입</a>
-        <a href="/mypage" class="text-decoration-none text-secondary">마이페이지</a>
+        <a href="/users/mypage" class="text-decoration-none text-secondary">마이페이지</a>
     </div>
 </nav>
 
@@ -172,14 +172,16 @@
         <!-- 공연 카드 반복 -->
         <div class="col" th:each="concert : ${concertList}">
             <div class="card h-100">
-                <img th:src="${concert.posterImgURL}" class="card-img-top" th:alt="${concert.title + ' 포스터'}">
-                <div class="card-body">
-                    <h6 class="text-primary fw-bold" th:text="${#temporals.format(concert.dateTime, 'MM.dd(E) HH:mm')}">공연일시</h6>
-                    <p class="mb-1 fw-semibold" th:text="${concert.title}">공연 제목</p>
-                    <p class="text-muted">일반예매</p>
-                    <span class="badge bg-danger" th:if="${concert.isAuction}">HOT</span>
-                    <span class="badge bg-primary">단독판매</span>
-                </div>
+                <a th:href="@{/tickets/{id}(id=${concert.id})}" class="text-decoration-none">
+                    <img th:src="${concert.posterImgURL}" class="card-img-top" th:alt="${concert.title + ' 포스터'}">
+                    <div class="card-body">
+                        <h6 class="text-primary fw-bold" th:text="${#temporals.format(concert.dateTime, 'MM.dd(E) HH:mm')}">공연일시</h6>
+                        <p class="mb-1 fw-semibold text-dark" th:text="${concert.title}">공연 제목</p>
+                        <p class="text-muted">일반예매</p>
+                        <span class="badge bg-danger" th:if="${concert.isAuction}">HOT</span>
+                        <span class="badge bg-primary">단독판매</span>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
