@@ -8,6 +8,10 @@ plugins {
 group = 'com.cashticket'
 version = '1.0-SNAPSHOT'
 
+application {
+    mainClass = 'com.cashticket.CashTicket'
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
@@ -26,7 +30,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-logging' // 기본 로깅 설정
     implementation 'org.springframework.session:spring-session-data-redis' // Redis 세션 지원
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -42,6 +46,7 @@ dependencies {
 
     // Lettuce Client (Redis 연결 라이브러리 - 기본적으로 포함됨)
     implementation files('libs/lettuce-core-6.2.3.jar') // 필요한 버전을 명시
+
 
     // Mockito
     testImplementation 'org.mockito:mockito-core:5.5.0'

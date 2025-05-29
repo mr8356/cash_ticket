@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>낙찰 상세 정보</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .detail-card {
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        .concert-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 1rem 1rem 0 0;
+        }
+        .info-section {
+            padding: 2rem;
+        }
+        .info-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .status-badge {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <!-- 상세 정보 카드 -->
+    <div class="card detail-card mb-4">
+        <!-- 콘서트 포스터 이미지 -->
+        <img th:if="${result.auction.concert.posterImgURL}" 
+             th:src="${result.auction.concert.posterImgURL}" 
+             class="concert-image" 
+             alt="콘서트 포스터">
+        
+        <div class="info-section">
+            <!-- 헤더 섹션 -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-2" th:text="${result.auction.concert.title}">공연 제목</h2>
+                    <span class="badge bg-primary status-badge" th:text="${result.status}">낙찰 상태</span>
+                </div>
+                <div class="text-end">
+                    <div class="info-label">낙찰번호</div>
+                    <div class="info-value" th:text="${result.id}">1234567890</div>
+                </div>
+            </div>
+
+            <!-- 상세 정보 섹션 -->
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <div class="info-label">👤 아티스트</div>
+                        <div class="info-value" th:text="${result.auction.concert.artist}">아티스트명</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="info-label">📅 공연 일시</div>
+                        <div class="info-value" th:text="${#temporals.format(result.auction.concert.dateTime, 'yyyy-MM-dd (E) HH:mm')}">공연 일시</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="info-label">🪑 좌석번호</div>
+                        <div class="info-value" th:text="${result.seatNo}">좌석번호</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <div class="info-label">📍 공연장</div>
+                        <div class="info-value" th:text="${result.auction.concert.place}">공연장</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="info-label">🎭 카테고리</div>
+                        <div class="info-value" th:text="${result.auction.concert.category}">카테고리</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="info-label">💳 낙찰 금액</div>
+                        <div class="info-value" th:text="${#numbers.formatInteger(result.finalBidAmount, 3, 'COMMA')}">낙찰가</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 경매 정보 섹션 -->
+            <div class="mt-4 pt-4 border-top">
+                <h5 class="fw-bold mb-3">경매 정보</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <div class="info-label">🕒 경매 시작</div>
+                            <div class="info-value" th:text="${#temporals.format(result.auction.startTime, 'yyyy-MM-dd HH:mm')}">시작시간</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <div class="info-label">🕒 경매 종료</div>
+                            <div class="info-value" th:text="${#temporals.format(result.auction.endTime, 'yyyy-MM-dd HH:mm')}">종료시간</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 콘서트 설명 -->
+            <div class="mt-4 pt-4 border-top" th:if="${result.auction.concert.description}">
+                <h5 class="fw-bold mb-3">공연 설명</h5>
+                <p class="text-muted" th:text="${result.auction.concert.description}">공연 설명</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 버튼 영역 -->
+    <div class="d-flex justify-content-between">
+        <a href="/user/mypage/reservations" class="btn btn-outline-secondary">
+            ← 낙찰 목록으로 돌아가기
+        </a>
+        <a href="/user/mypage" class="btn btn-outline-primary">
+            마이페이지로 이동
+        </a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

@@ -10,6 +10,7 @@
         }
         .ticket-card {
             border-radius: 1rem;
+            margin-bottom: 2rem;
         }
         .ticket-detail p {
             margin-bottom: 0.5rem;
@@ -25,38 +26,43 @@
 <div class="container py-5">
     <!-- 페이지 헤더 -->
     <div class="text-center mb-5">
-        <h2 class="fw-bold">🎟️ 예매 정보 확인</h2>
-        <p class="text-muted">내가 예매한 티켓 정보를 아래에서 확인하세요.</p>
+        <h2 class="fw-bold">🎟️ 낙찰 정보 확인</h2>
+        <p class="text-muted">내가 낙찰받은 티켓 정보를 아래에서 확인하세요.</p>
     </div>
 
-    <!-- 예매 정보 카드 -->
-    <div class="card shadow-sm bg-white ticket-card p-4">
+    <!-- 낙찰 정보 카드 목록 -->
+    <div th:each="result : ${auctionResults}" class="card shadow-sm bg-white ticket-card p-4">
         <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
             <div>
-                <h4 class="fw-bold mb-1" th:text="${concert.title}">공연 제목</h4>
-                <span class="badge badge-title text-white">예매 완료</span>
+                <h4 class="fw-bold mb-1" th:text="${result.auction.concert.title}">공연 제목</h4>
+                <span class="badge badge-title text-white" th:text="${result.status}">낙찰 상태</span>
             </div>
             <div class="text-end">
-                <small class="text-muted">예매번호</small>
-                <div class="fw-semibold" th:text="${reservation.id}">1234567890</div>
+                <small class="text-muted">낙찰번호</small>
+                <div class="fw-semibold" th:text="${result.id}">1234567890</div>
             </div>
         </div>
 
         <!-- 세부 정보 -->
         <div class="ticket-detail">
-            <p><strong>👤 아티스트:</strong> <span th:text="${concert.artist}">아티스트명</span></p>
-            <p><strong>📅 날짜:</strong> <span th:text="${#temporals.format(concert.dateTime, 'yyyy-MM-dd (E) HH:mm')}">공연 일시</span></p>
-            <p><strong>🪑 좌석:</strong> <span th:text="${reservation.seat}">R석 2열 8번</span></p>
-            <p><strong>📍 장소:</strong> <span th:text="${concert.place}">공연장</span></p>
-            <p><strong>🎭 카테고리:</strong> <span th:text="${concert.category}">카테고리</span></p>
-            <p><strong>💳 결제 금액:</strong> <span th:text="${reservation.amount}">120,000원</span></p>
-            <p><strong>💰 결제 수단:</strong> <span th:text="${reservation.payment}">신용카드</span></p>
+            <p><strong>👤 아티스트:</strong> <span th:text="${result.auction.concert.artist}">아티스트명</span></p>
+            <p><strong>📅 날짜:</strong> <span th:text="${#temporals.format(result.auction.concert.dateTime, 'yyyy-MM-dd (E) HH:mm')}">공연 일시</span></p>
+            <p><strong>🪑 좌석번호:</strong> <span th:text="${result.seatNo}">좌석번호</span></p>
+            <p><strong>📍 장소:</strong> <span th:text="${result.auction.concert.place}">공연장</span></p>
+            <p><strong>🎭 카테고리:</strong> <span th:text="${result.auction.concert.category}">카테고리</span></p>
+            <p><strong>💳 낙찰 금액:</strong> <span th:text="${result.finalBidAmount}">낙찰가</span>원</p>
+            <p><strong>🕒 경매 기간:</strong> 
+                <span th:text="${#temporals.format(result.auction.startTime, 'yyyy-MM-dd HH:mm')}">시작시간</span> ~ 
+                <span th:text="${#temporals.format(result.auction.endTime, 'yyyy-MM-dd HH:mm')}">종료시간</span>
+            </p>
         </div>
 
         <!-- 버튼 영역 -->
         <div class="mt-4 d-flex justify-content-between">
-            <a href="/mypage/reservations" class="btn btn-outline-secondary">← 예매 내역 목록</a>
-            <a href="/cancel/1234567890" class="btn btn-danger">예매 취소</a>
+            <a href="/user/mypage" class="btn btn-outline-secondary">← 마이페이지로 돌아가기</a>
+            <a th:if="${result.status == T(com.cashticket.entity.AuctionResultStatusEnum).WINNER}" 
+               th:href="@{'/user/mypage/reservations/' + ${result.id}}" 
+               class="btn btn-primary">상세 보기</a>
         </div>
     </div>
 </div>

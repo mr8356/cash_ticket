@@ -4,6 +4,7 @@ import com.cashticket.config.CurrentUser;
 import com.cashticket.entity.Concert;
 import com.cashticket.entity.User;
 import com.cashticket.service.TicketService;
+import com.cashticket.strategy.ConcertFilterContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -23,6 +24,7 @@ public class TicketController {
     private final TicketService ticketService;
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
+    private final ConcertFilterContext filterContext;
 
     // TODO: 콘서트 상세 조회
     @GetMapping("/{concertId}")
@@ -55,8 +57,27 @@ public class TicketController {
 
     // TODO: 콘서트 검색
     @GetMapping("/search")
-    public String searchConcerts(@RequestParam String keyword, Model model) {
-        List<Concert> concerts = ticketService.searchConcerts(keyword);
+    public String searchConcerts(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String artist,
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String category,
+            Model model) {
+        
+        // 기본 검색 결과 가져오기
+        List<Concert> concerts = ticketService.searchConcerts(query);
+        
+        // 필터 적용
+        if (artist != null && !artist.isEmpty()) {
+            concerts = filterContext.applyFilter("artist", concerts, artist);
+        }
+        if (date != null && !date.isEmpty()) {
+            concerts = filterContext.applyFilter("date", concerts, date);
+        }
+        if (category != null && !category.isEmpty()) {
+            concerts = filterContext.applyFilter("category", concerts, category);
+        }
+        
         model.addAttribute("concerts", concerts);
         return "search_results";
     }
