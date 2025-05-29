@@ -5,6 +5,12 @@
     <title>찜 목록</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px; /* 홈 버튼을 위한 여백 */
+        }
         .wishlist-card {
             border-radius: 0.75rem;
             overflow: hidden;
@@ -13,15 +19,26 @@
             height: 160px;
             object-fit: cover;
         }
+        .favorite-card {
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+        .home-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body class="bg-light">
 
 <div class="container py-5">
-    <!-- 타이틀 -->
+    <!-- 페이지 헤더 -->
     <div class="text-center mb-5">
-        <h2 class="fw-bold">⭐ 찜한 목록</h2>
-        <p class="text-muted">내가 찜한 공연/전시 정보를 확인하고 예매해보세요!</p>
+        <h2 class="fw-bold">⭐ 찜 목록</h2>
+        <p class="text-muted">관심 있는 공연을 확인하세요.</p>
     </div>
 
     <!-- 찜 리스트 -->
@@ -46,6 +63,11 @@
         <!-- 반복 끝 -->
     </div>
 </div>
+
+<!-- 홈 버튼 -->
+<a th:href="@{/}" class="btn btn-primary home-button">
+    <i class="bi bi-house-door"></i> 홈으로
+</a>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -27,7 +27,6 @@
 <body class="bg-light">
 
 <div class="container py-5">
-
     <!-- 제목 영역 -->
     <div class="text-center mb-5">
         <h2 class="fw-bold" th:text="${concert.title}">[콘서트 제목]</h2>
@@ -72,13 +71,14 @@
     </div>
 
     <!-- 하단 버튼 -->
-    <div class="text-end mt-4 d-flex justify-content-end align-items-center gap-3">
-
-
-        <!-- 예매 및 목록 -->
-        <a href="/concerts" class="btn btn-outline-secondary">← 목록으로 돌아가기</a>
-        <a th:if="${!concert.isAuction}" th:href="@{/reserve/{id}(id=${concert.id})}" class="btn btn-primary">예매하기</a>
-        <a th:if="${concert.isAuction}" th:href="@{/auction/{id}(id=${concert.id})}" class="btn btn-primary">경매 참여하기</a>
+    <div class="mt-4 d-flex justify-content-between align-items-center">
+        <a th:href="@{/concerts}" class="btn btn-outline-secondary">
+            ← 목록으로 돌아가기
+        </a>
+        <div>
+            <a th:if="${!concert.isAuction}" th:href="@{/reserve/{id}(id=${concert.id})}" class="btn btn-primary">예매하기</a>
+            <a th:if="${concert.isAuction}" th:href="@{/auction/{id}(id=${concert.id})}" class="btn btn-primary">경매 참여하기</a>
+        </div>
     </div>
 
 </div>

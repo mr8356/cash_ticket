@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <title>마이페이지</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px; /* 홈 버튼을 위한 여백 */
+        }
+        .home-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -14,10 +29,6 @@
     <div class="text-center mb-5">
         <h2 class="fw-bold">👤 마이페이지</h2>
         <p class="text-muted">나의 정보를 확인하고 관리하세요</p>
-        <!-- 홈으로 돌아가기 버튼 추가 -->
-        <a th:href="@{/}" class="btn btn-outline-primary mt-3">
-            <i class="bi bi-house-door"></i> 홈으로
-        </a>
     </div>
 
     <!-- 사용자 정보 카드 -->
@@ -57,6 +68,11 @@
     </div>
 
 </div>
+
+<!-- 홈 버튼 -->
+<a th:href="@{/}" class="btn btn-primary home-button">
+    <i class="bi bi-house-door"></i> 홈으로
+</a>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
