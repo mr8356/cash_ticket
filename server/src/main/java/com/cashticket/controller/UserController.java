@@ -81,6 +81,12 @@ public class UserController {
 	}
 
 	// 사용자의 찜목록 조회
+	@GetMapping("/mypage/favorites")
+	public String getFavorites(@CurrentUser User user, Model model) {
+		List<AuctionResult> auctionResults = userService.getAuctionResults(user);
+		model.addAttribute("auctionResults", auctionResults);
+		return "mypage/favorites";
+	}
 
 	@GetMapping("/me")
 	public ResponseEntity<?> getCurrentUser(@CurrentUser User user) {

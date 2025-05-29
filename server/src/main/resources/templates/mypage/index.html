@@ -14,17 +14,21 @@
     <div class="text-center mb-5">
         <h2 class="fw-bold">👤 마이페이지</h2>
         <p class="text-muted">나의 정보를 확인하고 관리하세요</p>
+        <!-- 홈으로 돌아가기 버튼 추가 -->
+        <a th:href="@{/}" class="btn btn-outline-primary mt-3">
+            <i class="bi bi-house-door"></i> 홈으로
+        </a>
     </div>
 
     <!-- 사용자 정보 카드 -->
     <div class="card mb-5 shadow-sm">
         <div class="card-body">
             <h5 class="card-title">회원 정보</h5>
-            <p class="mb-1"><strong>아이디:</strong> <span th:text="${user.id}">동현</span></p>
+            <p class="mb-1"><strong>아이디:</strong> <span th:text="${user.userId}">동현</span></p>
             <p class="mb-1"><strong>이름:</strong> <span th:text="${user.nickname}">홍길동</span></p>
             <p class="mb-1"><strong>이메일:</strong> <span th:text="${user.email}">example@email.com</span></p>
             <p class="mb-1"><strong>전화번호:</strong> <span th:text="${user.phoneNumber}">010-1234-5678</span></p>
-            <p class="mb-1"><strong>생년월일:</strong> <span th:text="${user.birthDay}">1990-01-01</span></p>
+            <p class="mb-1"><strong>생년월일:</strong> <span th:text="${#temporals.format(user.birthDay, 'yyyy-MM-dd')}">1990-01-01</span></p>
         </div>
     </div>
 
@@ -32,21 +36,21 @@
     <div class="row g-4 text-center">
         <!-- 찜 목록 -->
         <div class="col-md-4">
-            <a href="/users/mypage/favorites" class="btn btn-warning w-100 py-3 shadow-sm">
+            <a th:href="@{/users/mypage/favorites}" class="btn btn-warning w-100 py-3 shadow-sm">
                 ⭐ 찜 목록
             </a>
         </div>
 
         <!-- 예매 내역 -->
         <div class="col-md-4">
-            <a href="/users/mypage/reservations" class="btn btn-primary w-100 py-3 shadow-sm">
+            <a th:href="@{/users/mypage/reservations}" class="btn btn-primary w-100 py-3 shadow-sm">
                 🎟️ 예매 내역
             </a>
         </div>
 
         <!-- 내 정보 수정 -->
         <div class="col-md-4">
-            <a href="/users/mypage/edit" class="btn btn-secondary w-100 py-3 shadow-sm">
+            <a th:href="@{/users/mypage/edit}" class="btn btn-secondary w-100 py-3 shadow-sm">
                 🛠️ 내 정보 수정
             </a>
         </div>
