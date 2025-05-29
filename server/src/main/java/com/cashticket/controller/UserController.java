@@ -1,9 +1,14 @@
 package com.cashticket.controller;
 
 import com.cashticket.config.CurrentUser;
+import com.cashticket.entity.AuctionResult;
 import com.cashticket.entity.User;
 import com.cashticket.service.UserService;
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,12 +72,17 @@ public class UserController {
 	public String getReservationDetail(@PathVariable Long reservationId,
 									 @CurrentUser User user,
 									 Model model) {
-		Reservation reservation = userService.getReservationDetail(reservationId, user);
-		model.addAttribute("reservation", reservation);
-		model.addAttribute("concert", reservation.getConcert());
+		AuctionResult result = userService.getAuctionResultDetail(reservationId, user);
+		model.addAttribute("result", result);
 		return "mypage/reservation-detail";
 	}
 	// 예매 취소
+	@GetMapping("/mypage/reservations/{reservationId}/cancel")
+	public String cancelReservation(@PathVariable Long reservationId,
+									@CurrentUser User user) {
+		userService.cancelAuctionResult(reservationId, user);
+		return "redirect:/users/mypage/reservations";
+	}
 
 	// 사용자의 찜목록 조회
 
