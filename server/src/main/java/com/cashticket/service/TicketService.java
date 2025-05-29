@@ -7,8 +7,6 @@ import com.cashticket.repository.ConcertRepository;
 import com.cashticket.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,7 +61,4 @@ public class TicketService {
                 .map(LikeTable::getConcert)
                 .collect(Collectors.toList());
     }
-
-    // TODO: 찜 목록 조회
-
 }

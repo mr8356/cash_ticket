@@ -5,7 +5,6 @@ import com.cashticket.entity.Concert;
 import com.cashticket.entity.User;
 import com.cashticket.service.TicketService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;

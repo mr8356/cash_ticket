@@ -3,9 +3,6 @@ package com.cashticket.service;
 import com.cashticket.entity.User;
 import com.cashticket.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-
-import java.time.LocalDate;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
