@@ -7,6 +7,7 @@ import com.cashticket.repository.ConcertRepository;
 import com.cashticket.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,39 @@ public class AuctionService {
     private static final String AUCTION_KEY_PREFIX = "auction:";
     private static final String AUCTION_BIDDERS_KEY_PREFIX = "auction:bidders:";
     private static final String AUCTION_END_TIME_KEY_PREFIX = "auction:endtime:";
+    private static final String AUCTION_BID_COUNT_PREFIX = "auction:bidcount:";
+    private static final int MAX_BID_COUNT = 3;
+
+    // 매일 자정에 실행되어 다음날 시작할 경매를 시작
+    @Scheduled(cron = "0 0 0 * * ?")
+    @Transactional
+    public void scheduleAuctionStart() {
+        LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+        // 내일 시작할 경매 목록 조회
+        Set<Concert> upcomingConcerts = concertRepository.findByDateTimeBetween(
+            tomorrow, tomorrow.plusDays(1));
+        
+        for (Concert concert : upcomingConcerts) {
+            // 경매 시작 (시작가와 종료 시간 설정)
+            startAuction(concert.getId(), 10000, // 기본 시작가 10000원
+                concert.getDateTime().minusHours(1)); // 공연 시작 1시간 전에 경매 종료
+        }
+    }
+
+    // 1분마다 실행되어 종료 시간이 된 경매를 종료
+    @Scheduled(fixedRate = 60000)
+    @Transactional
+    public void scheduleAuctionEnd() {
+        Set<Long> activeAuctions = getActiveAuctions();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (Long concertId : activeAuctions) {
+            LocalDateTime endTime = getAuctionEndTime(concertId);
+            if (endTime != null && endTime.isBefore(now)) {
+                endAuction(concertId);
+            }
+        }
+    }
 
     // 경매 시작
     @Transactional
@@ -58,10 +92,18 @@ public class AuctionService {
         String auctionKey = AUCTION_KEY_PREFIX + concertId;
         String biddersKey = AUCTION_BIDDERS_KEY_PREFIX + concertId;
         String endTimeKey = AUCTION_END_TIME_KEY_PREFIX + concertId;
+        String bidCountKey = AUCTION_BID_COUNT_PREFIX + concertId + ":" + userId;
 
         // 경매 종료 시간 확인
         String endTimeStr = redisTemplate.opsForValue().get(endTimeKey);
         if (endTimeStr == null || LocalDateTime.parse(endTimeStr).isBefore(LocalDateTime.now())) {
+            return false;
+        }
+
+        // 입찰 횟수 확인
+        String bidCountStr = redisTemplate.opsForValue().get(bidCountKey);
+        int bidCount = bidCountStr != null ? Integer.parseInt(bidCountStr) : 0;
+        if (bidCount >= MAX_BID_COUNT) {
             return false;
         }
 
@@ -76,10 +118,28 @@ public class AuctionService {
             return false;
         }
 
+        // 사용자의 가장 최근 이전 입찰 삭제
+        Set<String> allBids = redisTemplate.opsForZSet().range(auctionKey, 0, -1);
+        String lastUserBidId = null;
+        if (allBids != null) {
+            for (String bidId : allBids) {
+                if (bidId.startsWith(userId + ":")) {
+                    lastUserBidId = bidId;
+                }
+            }
+            if (lastUserBidId != null) {
+                redisTemplate.opsForZSet().remove(auctionKey, lastUserBidId);
+                redisTemplate.opsForHash().delete(biddersKey, lastUserBidId);
+            }
+        }
+
         // 새로운 입찰 추가
         String bidId = userId + ":" + System.currentTimeMillis();
         redisTemplate.opsForZSet().add(auctionKey, bidId, bidAmount);
         redisTemplate.opsForHash().put(biddersKey, bidId, userId.toString());
+        
+        // 입찰 횟수 증가
+        redisTemplate.opsForValue().increment(bidCountKey);
 
         // Bid 엔티티 저장
         Auction auction = auctionRepository.findByConcertId(concertId)
@@ -165,6 +225,13 @@ public class AuctionService {
         redisTemplate.delete(auctionKey);
         redisTemplate.delete(biddersKey);
         redisTemplate.delete(endTimeKey);
+        
+        // 입찰 횟수 데이터 삭제
+        String bidCountPattern = AUCTION_BID_COUNT_PREFIX + concertId + ":*";
+        Set<String> bidCountKeys = redisTemplate.keys(bidCountPattern);
+        if (bidCountKeys != null && !bidCountKeys.isEmpty()) {
+            redisTemplate.delete(bidCountKeys);
+        }
 
         return true;
     }
