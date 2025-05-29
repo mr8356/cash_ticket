@@ -16,7 +16,7 @@
     <!-- 가운데: 검색창 -->
     <!-- 가운데: 검색창 (필터 포함) -->
     <div class="position-relative w-50">
-        <form class="d-flex" action="/search" method="get">
+        <form class="d-flex" action="/ticket/search" method="get">
             <input class="form-control me-2" type="search" placeholder="이제 CashTicket으로 예매해요!" name="query" aria-label="Search" data-bs-toggle="collapse" data-bs-target="#filterOptions">
             <button class="btn btn-primary btn-sm" type="submit">검색</button>
         </form>
@@ -32,7 +32,7 @@
                         <input type="date" class="form-control" name="date">
                     </div>
                     <div class="col-md-4">
-                        <select class="form-select" name="genre">
+                        <select class="form-select" name="category">
                             <option value="">장르 선택</option>
                             <option value="뮤지컬">뮤지컬</option>
                             <option value="콘서트">콘서트</option>
