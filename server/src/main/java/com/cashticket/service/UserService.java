@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,6 +71,25 @@ public class UserService {
 				.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 낙찰 정보입니다."));
 		auctionResult.setStatus(AuctionResultStatusEnum.CANCELLED);
 		auctionResultRepository.save(auctionResult);
+	}
+
+	@Transactional
+	public void updateUser(User updatedUser) {
+		User existingUser = userRepository.findById(updatedUser.getId())
+				.orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+		// 기존 사용자의 정보를 유지하면서 업데이트할 필드만 변경
+		existingUser.setNickname(updatedUser.getNickname());
+		existingUser.setEmail(updatedUser.getEmail());
+		existingUser.setBirthDay(updatedUser.getBirthDay());
+		existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+
+		// 비밀번호가 변경된 경우에만 업데이트
+		if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+			existingUser.setPassword(updatedUser.getPassword());
+		}
+
+		userRepository.save(existingUser);
 	}
 
 }

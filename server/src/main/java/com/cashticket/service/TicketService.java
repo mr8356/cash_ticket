@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +30,16 @@ public class TicketService {
                 .orElseThrow(() -> new RuntimeException("콘서트를 찾을 수 없습니다."));
     }
 
-    // TODO: 콘서트 검색
+    // 콘서트 검색
     public List<Concert> searchConcerts(String keyword) {
-        return concertRepository.findByTitleContainingIgnoreCaseOrArtistContainingIgnoreCase(keyword, keyword);
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return concertRepository.findAll();
+        }
+        return concertRepository.findAll().stream()
+                .filter(concert -> 
+                    concert.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
+                    concert.getArtist().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toList());
     }
 
     // TODO: 찜 추가/삭제

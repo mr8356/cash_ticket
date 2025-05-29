@@ -14,37 +14,38 @@
     <a class="navbar-brand fw-bold" href="#"> Cash Ticket </a>
 
     <!-- 가운데: 검색창 -->
-    <!-- 가운데: 검색창 (필터 포함) -->
     <div class="position-relative w-50">
-        <form class="d-flex" action="/ticket/search" method="get">
-            <input class="form-control me-2" type="search" placeholder="이제 CashTicket으로 예매해요!" name="query" aria-label="Search" data-bs-toggle="collapse" data-bs-target="#filterOptions">
-            <button class="btn btn-primary btn-sm" type="submit">검색</button>
-        </form>
+        <form class="d-flex flex-column" action="/tickets/search" method="get">
+            <div class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="이제 CashTicket으로 예매해요!" name="query" aria-label="Search" data-bs-toggle="collapse" data-bs-target="#filterOptions">
+                <button class="btn btn-primary btn-sm" type="submit">검색</button>
+            </div>
 
-        <!-- 필터 옵션: 아티스트 / 날짜 / 장르 -->
-        <div class="collapse mt-2" id="filterOptions">
-            <div class="card card-body">
-                <div class="row g-2">
-                    <div class="col-md-4">
-                        <input type="text" class="form-control" name="artist" placeholder="아티스트명">
-                    </div>
-                    <div class="col-md-4">
-                        <input type="date" class="form-control" name="date">
-                    </div>
-                    <div class="col-md-4">
-                        <select class="form-select" name="category">
-                            <option value="">장르 선택</option>
-                            <option value="뮤지컬">뮤지컬</option>
-                            <option value="콘서트">콘서트</option>
-                            <option value="스포츠">스포츠</option>
-                            <option value="클래식">클래식</option>
-                            <option value="연극">연극</option>
-                            <option value="전시/행사">전시/행사</option>
-                        </select>
+            <!-- 필터 옵션: 아티스트 / 날짜 / 장르 -->
+            <div class="collapse mt-2" id="filterOptions">
+                <div class="card card-body">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="artist" placeholder="아티스트명">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="date" class="form-control" name="date">
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" name="category">
+                                <option value="">장르 선택</option>
+                                <option value="뮤지컬">뮤지컬</option>
+                                <option value="콘서트">콘서트</option>
+                                <option value="스포츠">스포츠</option>
+                                <option value="클래식">클래식</option>
+                                <option value="연극">연극</option>
+                                <option value="전시/행사">전시/행사</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
 

@@ -43,22 +43,18 @@ public class UserController {
 					  @RequestParam LocalDate birthDay,
 					  @RequestParam(required = false) String phoneNumber,
 					  @RequestParam(required = false) String password) {
-		try {
-			User updatedUser = User.builder()
-					.id(user.getId())
-					.userId(user.getUserId())
-					.email(email)
-					.password(password != null && !password.isEmpty() ? password : user.getPassword())
-					.nickname(nickname)
-					.birthDay(birthDay)
-					.phoneNumber(phoneNumber)
-					.build();
+		User updatedUser = User.builder()
+				.id(user.getId())
+				.userId(user.getUserId())
+				.email(email)
+				.password(password != null && !password.isEmpty() ? password : user.getPassword())
+				.nickname(nickname)
+				.birthDay(birthDay)
+				.phoneNumber(phoneNumber)
+				.build();
 
-			userService.register(updatedUser);
-			return "redirect:/user/mypage";
-		} catch (Exception e) {
-			return "redirect:/user/mypage/edit?error=" + e.getMessage();
-		}
+		userService.updateUser(updatedUser);
+		return "redirect:/users/mypage";
 	}
 	// 예매 정보 확인
 	@GetMapping("/mypage/reservations") 
