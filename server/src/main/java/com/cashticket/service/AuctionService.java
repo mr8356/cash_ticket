@@ -2,6 +2,7 @@ package com.cashticket.service;
 
 import com.cashticket.entity.*;
 import com.cashticket.repository.AuctionRepository;
+import com.cashticket.repository.AuctionResultRepository;
 import com.cashticket.repository.BidRepository;
 import com.cashticket.repository.ConcertRepository;
 import com.cashticket.repository.UserRepository;
@@ -12,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 public class AuctionService {
     private final RedisTemplate<String, String> redisTemplate;
     private final AuctionRepository auctionRepository;
+    private final AuctionResultRepository auctionResultRepository;
     private final BidRepository bidRepository;
     private final ConcertRepository concertRepository;
     private final UserRepository userRepository;
@@ -172,19 +177,29 @@ public class AuctionService {
     }
 
     // 최종 입찰자 정보 조회
-    public Long getWinner(Long concertId) {
+    public List<Long> getWinners(Long concertId) {
         String auctionKey = AUCTION_KEY_PREFIX + concertId;
         String biddersKey = AUCTION_BIDDERS_KEY_PREFIX + concertId;
 
-        Set<String> winningBids = redisTemplate.opsForZSet().range(auctionKey, -1, -1);
-        if (winningBids.isEmpty()) {
-            return null;
+        // Auction 엔티티에서 availableSeats 조회
+        Auction auction = auctionRepository.findByConcertId(concertId)
+                .orElseThrow(() -> new IllegalArgumentException("Auction not found"));
+        int availableSeats = auction.getAvailableSeats();
+
+        // 상위 입찰자들 조회
+        Set<String> winningBids = redisTemplate.opsForZSet().range(auctionKey, -availableSeats, -1);
+        if (winningBids == null || winningBids.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        String winningBidId = winningBids.iterator().next();
-        Object winnerId = redisTemplate.opsForHash().get(biddersKey, winningBidId);
-        
-        return winnerId != null ? Long.parseLong(winnerId.toString()) : null;
+        // 입찰자 ID 목록 반환
+        return winningBids.stream()
+                .map(bidId -> {
+                    Object winnerId = redisTemplate.opsForHash().get(biddersKey, bidId);
+                    return winnerId != null ? Long.parseLong(winnerId.toString()) : null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     // 경매 종료 처리
@@ -194,9 +209,9 @@ public class AuctionService {
         String biddersKey = AUCTION_BIDDERS_KEY_PREFIX + concertId;
         String endTimeKey = AUCTION_END_TIME_KEY_PREFIX + concertId;
 
-        // 최종 입찰자 정보 조회
-        Long winnerId = getWinner(concertId);
-        if (winnerId == null) {
+        // 최종 입찰자들 정보 조회
+        List<Long> winnerIds = getWinners(concertId);
+        if (winnerIds.isEmpty()) {
             return false;
         }
 
@@ -209,17 +224,21 @@ public class AuctionService {
         auction.setStatus(AuctionStatusEnum.CLOSED);
         auctionRepository.save(auction);
 
-        // AuctionResult 엔티티 생성
-        User winner = userRepository.findById(winnerId)
-                .orElseThrow(() -> new IllegalArgumentException("Winner not found"));
-        
-        AuctionResult result = AuctionResult.builder()
-                .auction(auction)
-                .user(winner)
-                .finalBidAmount((long) finalBid)
-                .status(AuctionResultStatusEnum.WINNER)
-                .seatNo(1) // 좌석 번호는 실제 구현에 따라 다르게 처리
-                .build();
+        // 각 승자에 대해 AuctionResult 엔티티 생성
+        for (int i = 0; i < winnerIds.size(); i++) {
+            User winner = userRepository.findById(winnerIds.get(i))
+                    .orElseThrow(() -> new IllegalArgumentException("Winner not found"));
+            
+            AuctionResult result = AuctionResult.builder()
+                    .auction(auction)
+                    .user(winner)
+                    .finalBidAmount((long) finalBid)
+                    .status(AuctionResultStatusEnum.WINNER)
+                    .seatNo(i + 1) // 좌석 번호는 1부터 순차적으로 할당
+                    .build();
+            
+            auctionResultRepository.save(result);
+        }
 
         // Redis 데이터 삭제
         redisTemplate.delete(auctionKey);
