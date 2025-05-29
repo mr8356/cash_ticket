@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>검색 결과</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<!-- 상단 검색 바 -->
+<nav class="navbar bg-light px-3 d-flex justify-content-between align-items-center">
+    <a class="navbar-brand fw-bold" href="/">Cash Ticket</a>
+    
+    <!-- 검색창 -->
+    <div class="position-relative w-50">
+        <form class="d-flex flex-column" action="/tickets/search" method="get">
+            <div class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="공연을 검색해보세요" name="query" th:value="${param.query}" aria-label="Search" data-bs-toggle="collapse" data-bs-target="#filterOptions">
+                <button class="btn btn-primary btn-sm" type="submit">검색</button>
+            </div>
+
+            <!-- 필터 옵션 -->
+            <div class="collapse mt-2" id="filterOptions">
+                <div class="card card-body">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="artist" placeholder="아티스트명" th:value="${param.artist}">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="date" class="form-control" name="date" th:value="${param.date}">
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" name="category">
+                                <option value="">장르 선택</option>
+                                <option value="뮤지컬" th:selected="${param.category == '뮤지컬'}">뮤지컬</option>
+                                <option value="콘서트" th:selected="${param.category == '콘서트'}">콘서트</option>
+                                <option value="스포츠" th:selected="${param.category == '스포츠'}">스포츠</option>
+                                <option value="클래식" th:selected="${param.category == '클래식'}">클래식</option>
+                                <option value="연극" th:selected="${param.category == '연극'}">연극</option>
+                                <option value="전시/행사" th:selected="${param.category == '전시/행사'}">전시/행사</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</nav>
+
+<!-- 검색 결과 섹션 -->
+<div class="container mt-5">
+    <h4 class="mb-4">검색 결과</h4>
+    
+    <!-- 검색 결과가 없는 경우 -->
+    <div th:if="${#lists.isEmpty(concerts)}" class="text-center py-5">
+        <p class="text-muted">검색 결과가 없습니다.</p>
+    </div>
+
+    <!-- 검색 결과 목록 -->
+    <div class="row row-cols-1 row-cols-md-3 g-4" th:if="${not #lists.isEmpty(concerts)}">
+        <div class="col" th:each="concert : ${concerts}">
+            <div class="card h-100">
+                <a th:href="@{/tickets/{id}(id=${concert.id})}" class="text-decoration-none">
+                    <img th:src="${concert.posterImgURL}" class="card-img-top" th:alt="${concert.title + ' 포스터'}">
+                    <div class="card-body">
+                        <h6 class="text-primary fw-bold" th:text="${#temporals.format(concert.dateTime, 'MM.dd(E) HH:mm')}">공연일시</h6>
+                        <p class="mb-1 fw-semibold text-dark" th:text="${concert.title}">공연 제목</p>
+                        <p class="text-muted mb-2" th:text="${concert.artist}">아티스트</p>
+                        <p class="text-muted mb-2" th:text="${concert.place}">공연장</p>
+                        <span class="badge bg-danger" th:if="${concert.isAuction}">HOT</span>
+                        <span class="badge bg-primary">단독판매</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
