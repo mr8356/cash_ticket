@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="utf-8"><title>결제 실패</title></head>
+<body>
+<h2>결제에 실패했습니다 ⛔</h2>
+<p th:text="'code : ' + ${code}">code</p>
+<p th:text="'message : ' + ${message}">message</p>
+
+<a href="javascript:history.back()">다시 시도</a>
+</body>
+</html>

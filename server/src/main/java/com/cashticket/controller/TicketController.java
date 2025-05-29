@@ -6,7 +6,6 @@ import com.cashticket.entity.User;
 import com.cashticket.service.TicketService;
 import com.cashticket.strategy.ConcertFilterContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
@@ -93,6 +92,12 @@ public class TicketController {
         return ResponseEntity.ok(result ? (like ? "찜 완료" : "찜 취소") : "처리 실패");
     }
     // TODO: 찜 여부 확인
+    @GetMapping("/likes")
+    public String getUserLikedConcerts(@CurrentUser User user, Model model) {
+        List<Concert> likedConcerts = ticketService.getUserLikedConcerts(user.getId());
+        model.addAttribute("likedConcerts", likedConcerts);
+        return "mypage/favorites"; // templates/mypage/favorites.html 로 렌더링
+    }
 
     // TODO: 찜 목록 조회
 

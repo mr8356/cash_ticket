@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>사전결제</title>
+    <script src="https://js.tosspayments.com/v1/payment-widget"></script>
+    <style>.btn{padding:12px 24px;font-size:16px;background:#3182f6;color:#fff;border:0;cursor:pointer}</style>
+</head>
+<body>
+<h2 th:text="'경매 #' + ${auctionId} + ' 사전결제'">경매 사전결제</h2>
+
+<button  id="pay-btn"
+         class="btn"
+         th:text="${#numbers.formatInteger(amount,0)} + '원 결제하기'">
+    50,000원 결제하기
+</button>
+
+<!-- Inline-JS : 주석토큰(*)으로 IDE 경고 제거 -->
+<script th:inline="javascript">
+    const CK         = 'test_ck_5OWRapdA8dd9zMMqkWbY8o1zEqZK';
+    const AUCTION_ID = /*[[${auctionId}]]*/ 0;
+    const AMOUNT     = /*[[${amount}]]*/ 0;
+    const CUSTOMER   = /*[['user-' + ${user.id}]]*/ 'anonymous';
+
+    const widget = PaymentWidget(CK, CUSTOMER);
+
+    document.getElementById('pay-btn').onclick = () =>
+        widget.requestPayment('카드', {
+            orderId   : 'order-' + Date.now(),
+            orderName : '경매 사전결제',
+            amount    : AMOUNT,
+            successUrl: `/payments/success?auctionId=${AUCTION_ID}&amount=${AMOUNT}`,
+            failUrl   : '/payments/fail'
+        });
+</script>
+</body>
+</html>

@@ -6,7 +6,6 @@ import com.cashticket.entity.AuctionResultStatusEnum;
 import com.cashticket.repository.UserRepository;
 import com.cashticket.repository.AuctionResultRepository;
 import lombok.RequiredArgsConstructor;
-
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
