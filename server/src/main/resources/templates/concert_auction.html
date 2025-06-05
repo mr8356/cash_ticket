@@ -30,17 +30,6 @@
             const sec = seconds % 60;
             return `${min}분 ${sec < 10 ? '0' + sec : sec}초`;
         }
-
-        // 폼 제출 전 유효성 검사
-        function validateBid(event) {
-            const bidAmount = parseInt(document.getElementById('bidAmount').value);
-            const currentBid = parseInt(document.getElementById('currentBid').textContent.replace(/,/g, ''));
-            
-            if (bidAmount <= currentBid) {
-                event.preventDefault();
-                alert('입찰 금액은 현재 최고가보다 높아야 합니다.');
-            }
-        }
     </script>
 </head>
 <body class="bg-light p-4">
@@ -50,10 +39,10 @@
     <!-- 콘서트 정보 -->
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title" th:text="${concert.name}">콘서트명</h5>
+            <h5 class="card-title" th:text="${concert.title}">콘서트명</h5>
             <p class="card-text">
                 일정: <span th:text="${#temporals.format(concert.date, 'yyyy-MM-dd HH:mm')}">2025-06-10</span><br>
-                장소: <span th:text="${concert.location}">서울 올림픽공원</span>
+                장소: <span th:text="${concert.place}">서울 올림픽공원</span>
             </p>
         </div>
     </div>
@@ -65,15 +54,14 @@
             <p>⏳ 남은 시간: <span id="countdown">--:--</span></p>
 
             <!-- 입찰 폼 -->
-            <form th:action="@{/auction/bid}" method="post" class="mt-3" onsubmit="validateBid(event)">
+            <form id="bidForm" th:data-concert="${concert.id}" class="mt-3">
                 <div class="mb-3">
                     <label for="bidAmount" class="form-label">입찰 금액 (원)</label>
-                    <input type="number" class="form-control" id="bidAmount" name="bidAmount" 
+                    <input id="bidAmount" name="bidAmount" type="number" class="form-control"
                            th:min="${currentBid + 1000}" step="1000" required>
                     <small class="text-muted">최소 입찰 단위: 1,000원</small>
                 </div>
-                <input type="hidden" name="concertId" th:value="${concert.id}">
-                <button type="submit" class="btn btn-success">입찰하기</button>
+                <button id="payBtn" type="button" class="btn btn-success">입찰하기</button>
             </form>
         </div>
     </div>
@@ -98,5 +86,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Toss 결제 모듈 번들 -->
+<script type="module" src="/dist/assets/bid_payment.js"></script>
 </body>
 </html>

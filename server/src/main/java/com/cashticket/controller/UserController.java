@@ -2,6 +2,7 @@ package com.cashticket.controller;
 
 import com.cashticket.config.CurrentUser;
 import com.cashticket.entity.AuctionResult;
+import com.cashticket.entity.Concert;
 import com.cashticket.entity.User;
 import com.cashticket.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -83,8 +84,8 @@ public class UserController {
 	// 사용자의 찜목록 조회
 	@GetMapping("/mypage/favorites")
 	public String getFavorites(@CurrentUser User user, Model model) {
-		List<AuctionResult> auctionResults = userService.getAuctionResults(user);
-		model.addAttribute("auctionResults", auctionResults);
+		List<Concert> favorites = userService.getFavorites(user);
+		model.addAttribute("concerts", favorites);
 		return "mypage/favorites";
 	}
 

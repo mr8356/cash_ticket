@@ -289,4 +289,34 @@ public class AuctionService {
         
         return LocalDateTime.parse(endTimeStr);
     }
+
+    // 결제 시 검증 전용 메서드
+    @Transactional(readOnly = true)
+    public void validateBid(Long concertId, Long userId, int bidAmount) {
+
+        /* 1) 경매 진행 중인지 확인 */
+        if (!isAuctionActive(concertId)) {                       // 이미 존재하는 메서드
+            throw new IllegalStateException("이미 종료된 경매입니다.");
+        }
+
+        /* 2) 입찰 횟수 제한 확인 */
+        String bidCountKey = AUCTION_BID_COUNT_PREFIX + concertId + ":" + userId;   // 기존 상수 재사용
+        String bidCountStr = redisTemplate.opsForValue().get(bidCountKey);
+        int bidCount = bidCountStr != null ? Integer.parseInt(bidCountStr) : 0;
+        if (bidCount >= MAX_BID_COUNT) {                         // 기존 상수 재사용
+            throw new IllegalArgumentException("입찰 가능 횟수를 초과했습니다.");
+        }
+
+        /* 3) 현재 최고가보다 높은가? */
+        int currentHighest = getCurrentHighestBid(concertId);    // 이미 존재하는 메서드:contentReference[oaicite:5]{index=5}
+        if (bidAmount <= currentHighest) {
+            throw new IllegalArgumentException("입찰 금액은 현재 최고가보다 높아야 합니다.");
+        }
+
+        /* 4) 최소 호가 단위(1,000원) 준수 여부 */
+        final int MIN_STEP = 1_000;                              // 필요하면 상수로 올려두세요
+        if ((bidAmount - currentHighest) % MIN_STEP != 0) {
+            throw new IllegalArgumentException("입찰 단위는 1,000원이어야 합니다.");
+        }
+    }
 } 
