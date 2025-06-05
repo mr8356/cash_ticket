@@ -3,11 +3,15 @@ package com.cashticket.service;
 import com.cashticket.entity.User;
 import com.cashticket.entity.AuctionResult;
 import com.cashticket.entity.AuctionResultStatusEnum;
+import com.cashticket.entity.Concert;
+import com.cashticket.entity.LikeTable;
 import com.cashticket.repository.UserRepository;
 import com.cashticket.repository.AuctionResultRepository;
+import com.cashticket.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 	private final UserRepository userRepository;
 	private final AuctionResultRepository auctionResultRepository;
+	private final LikeRepository likeRepository;
 
 	@Transactional
 	public User register(User user) {
@@ -89,6 +94,13 @@ public class UserService {
 		}
 
 		userRepository.save(existingUser);
+	}
+
+	public List<Concert> getFavorites(User user) {
+		List<LikeTable> likes = likeRepository.findByUser(user);
+		return likes.stream()
+					.map(LikeTable::getConcert)
+					.collect(Collectors.toList());
 	}
 
 }

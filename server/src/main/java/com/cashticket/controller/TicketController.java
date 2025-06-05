@@ -91,6 +91,8 @@ public class TicketController {
         boolean result = ticketService.toggleConcertLike(concertId, user);
         return ResponseEntity.ok(result ? (like ? "찜 완료" : "찜 취소") : "처리 실패");
     }
+
+    
     // TODO: 찜 여부 확인
     @GetMapping("/likes")
     public String getUserLikedConcerts(@CurrentUser User user, Model model) {

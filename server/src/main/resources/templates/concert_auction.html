@@ -50,10 +50,10 @@
     <!-- 콘서트 정보 -->
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title" th:text="${concert.name}">콘서트명</h5>
+            <h5 class="card-title" th:text="${concert.title}">콘서트명</h5>
             <p class="card-text">
                 일정: <span th:text="${#temporals.format(concert.date, 'yyyy-MM-dd HH:mm')}">2025-06-10</span><br>
-                장소: <span th:text="${concert.location}">서울 올림픽공원</span>
+                장소: <span th:text="${concert.place}">서울 올림픽공원</span>
             </p>
         </div>
     </div>
