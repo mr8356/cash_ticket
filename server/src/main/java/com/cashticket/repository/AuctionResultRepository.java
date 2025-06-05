@@ -16,4 +16,4 @@ public interface AuctionResultRepository extends JpaRepository<AuctionResult, Lo
            "JOIN FETCH a.concert " +
            "WHERE ar.user = :user")
     List<AuctionResult> findByUserWithAuctionAndConcert(@Param("user") User user);
-} 
+}
