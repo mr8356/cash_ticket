@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/users")
@@ -24,7 +25,16 @@ public class UserController {
 	private final UserService userService;
 
 	@GetMapping("/mypage")
-	public String mypage(@CurrentUser User user, Model model) {
+	public String mypage(@CurrentUser User user, Model model, RedirectAttributes redirectAttributes) {
+		// 1. 로그인된 사용자인지 확인합니다.
+		if (user == null) {
+			// 2. 비로그인 상태이면, 리다이렉트될 페이지로 메시지를 전달합니다.
+			redirectAttributes.addFlashAttribute("alertMessage", "로그인 후 이용 가능합니다.");
+			// 3. 홈("/")으로 리다이렉트합니다.
+			return "redirect:/";
+		}
+
+		// 기존 로직: 로그인 상태이면 마이페이지로 이동합니다.
 		model.addAttribute("user", user);
 		return "mypage/index";
 	}
@@ -43,7 +53,10 @@ public class UserController {
 					  @RequestParam String email,
 					  @RequestParam LocalDate birthDay,
 					  @RequestParam(required = false) String phoneNumber,
-					  @RequestParam(required = false) String password) {
+					  @RequestParam(required = false) String password,
+					  Model model) {
+		
+		
 		User updatedUser = User.builder()
 				.id(user.getId())
 				.userId(user.getUserId())
@@ -84,10 +97,17 @@ public class UserController {
 	// 사용자의 찜목록 조회
 	@GetMapping("/mypage/favorites")
 	public String getFavorites(@CurrentUser User user, Model model) {
-		List<Concert> favorites = userService.getFavorites(user);
-		model.addAttribute("concerts", favorites);
+		List<Concert> concerts = userService.getFavorites(user);
+		model.addAttribute("concerts", concerts);
 		return "mypage/favorites";
 	}
+
+	@DeleteMapping("/mypage/favorites/{concertId}")
+	public String deleteFavorite(@PathVariable Long concertId, @CurrentUser User user) {
+		userService.deleteFavorite(concertId, user);
+		return "mypage/favorites";
+	}
+
 
 	@GetMapping("/me")
 	public ResponseEntity<?> getCurrentUser(@CurrentUser User user) {
