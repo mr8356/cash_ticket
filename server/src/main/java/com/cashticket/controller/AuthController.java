@@ -72,10 +72,18 @@ public class AuthController {
     public String logout(HttpSession session) {
         // Redis 세션에서 사용자 정보 삭제
         String sessionId = session.getId();
-        redisTemplate.delete("spring:session:" + sessionId + ":userId");
-        
-        session.invalidate();
-        return "<script>alert('로그아웃 되었습니다.'); location.href='/';</script>";
+        String userIdKey = "spring:session:" + sessionId + ":userId";
+        Boolean hasUser = redisTemplate.hasKey(userIdKey);
+        if (hasUser != null && hasUser) {
+        // 로그인된 상태에서만 로그아웃 팝업
+            redisTemplate.delete(userIdKey);
+            session.invalidate();
+            return "<script>alert('로그아웃 되었습니다.'); location.href='/';</script>";
+        } else {
+        // 로그인 안 된 상태면 팝업 없이 바로 이동
+            session.invalidate();
+            return "<script>location.href='/';</script>";
+        }
     }
 
     @GetMapping("/me")
