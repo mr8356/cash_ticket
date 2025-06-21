@@ -92,4 +92,10 @@ public class UserService {
 	}
 
 
+	@Transactional
+	public void deleteFavorite(Long concertId, User user) {
+		LikeTable like = likeRepository.findByConcertIdAndUser_Id(concertId, user.getId())
+				.orElseThrow(() -> new IllegalArgumentException("해당 찜 정보를 찾을 수 없습니다."));
+		likeRepository.delete(like);
+	}
 }
