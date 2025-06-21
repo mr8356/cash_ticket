@@ -30,8 +30,18 @@ public class AuctionController {
     @GetMapping("/{concertId}")
     public String getAuctionDetail(@PathVariable Long concertId, Model model) {
         Concert concert = ticketService.getConcertDetail(concertId);
-        int currentBid = auctionService.getCurrentHighestBid(concertId);
+        
+        // 경매가 존재하는지 확인
         boolean isActive = auctionService.isAuctionActive(concertId);
+        if (!isActive) {
+            // 경매가 없거나 종료된 경우
+            model.addAttribute("concert", concert);
+            model.addAttribute("isActive", false);
+            model.addAttribute("currentBid", 0);
+            return "concert_auction";
+        }
+        
+        int currentBid = auctionService.getCurrentHighestBid(concertId);
         
         model.addAttribute("concert", concert);
         model.addAttribute("currentBid", currentBid);

@@ -31,7 +31,6 @@ public class AuctionService {
 
     private static final String AUCTION_KEY_PREFIX = "auction:";
     private static final String AUCTION_BIDDERS_KEY_PREFIX = "auction:bidders:";
-    private static final String AUCTION_END_TIME_KEY_PREFIX = "auction:endtime:";
     private static final String AUCTION_BID_COUNT_PREFIX = "auction:bidcount:";
     private static final int MAX_BID_COUNT = 3;
 
@@ -85,10 +84,8 @@ public class AuctionService {
         // Redis 초기화
         String auctionKey = AUCTION_KEY_PREFIX + concertId;
         String biddersKey = AUCTION_BIDDERS_KEY_PREFIX + concertId;
-        String endTimeKey = AUCTION_END_TIME_KEY_PREFIX + concertId;
 
         redisTemplate.opsForZSet().add(auctionKey, "initial", startPrice);
-        redisTemplate.opsForValue().set(endTimeKey, endTime.toString());
     }
 
     // 입찰 처리
@@ -96,12 +93,10 @@ public class AuctionService {
     public boolean placeBid(Long concertId, Long userId, int bidAmount) {
         String auctionKey = AUCTION_KEY_PREFIX + concertId;
         String biddersKey = AUCTION_BIDDERS_KEY_PREFIX + concertId;
-        String endTimeKey = AUCTION_END_TIME_KEY_PREFIX + concertId;
         String bidCountKey = AUCTION_BID_COUNT_PREFIX + concertId + ":" + userId;
 
-        // 경매 종료 시간 확인
-        String endTimeStr = redisTemplate.opsForValue().get(endTimeKey);
-        if (endTimeStr == null || LocalDateTime.parse(endTimeStr).isBefore(LocalDateTime.now())) {
+        // 경매 상태 확인 (Redis 대신 DB 사용)
+        if (!isAuctionActive(concertId)) {
             return false;
         }
 
@@ -207,7 +202,6 @@ public class AuctionService {
     public boolean endAuction(Long concertId) {
         String auctionKey = AUCTION_KEY_PREFIX + concertId;
         String biddersKey = AUCTION_BIDDERS_KEY_PREFIX + concertId;
-        String endTimeKey = AUCTION_END_TIME_KEY_PREFIX + concertId;
 
         // 최종 입찰자들 정보 조회
         List<Long> winnerIds = getWinners(concertId);
@@ -243,7 +237,6 @@ public class AuctionService {
         // Redis 데이터 삭제
         redisTemplate.delete(auctionKey);
         redisTemplate.delete(biddersKey);
-        redisTemplate.delete(endTimeKey);
         
         // 입찰 횟수 데이터 삭제
         String bidCountPattern = AUCTION_BID_COUNT_PREFIX + concertId + ":*";
@@ -294,26 +287,26 @@ public class AuctionService {
     public void validateBid(Long concertId, Long userId, int bidAmount) {
 
         /* 1) 경매 진행 중인지 확인 */
-        if (!isAuctionActive(concertId)) {                       // 이미 존재하는 메서드
+        if (!isAuctionActive(concertId)) {
             throw new IllegalStateException("이미 종료된 경매입니다.");
         }
 
         /* 2) 입찰 횟수 제한 확인 */
-        String bidCountKey = AUCTION_BID_COUNT_PREFIX + concertId + ":" + userId;   // 기존 상수 재사용
+        String bidCountKey = AUCTION_BID_COUNT_PREFIX + concertId + ":" + userId;
         String bidCountStr = redisTemplate.opsForValue().get(bidCountKey);
         int bidCount = bidCountStr != null ? Integer.parseInt(bidCountStr) : 0;
-        if (bidCount >= MAX_BID_COUNT) {                         // 기존 상수 재사용
+        if (bidCount >= MAX_BID_COUNT) {
             throw new IllegalArgumentException("입찰 가능 횟수를 초과했습니다.");
         }
 
         /* 3) 현재 최고가보다 높은가? */
-        int currentHighest = getCurrentHighestBid(concertId);    // 이미 존재하는 메서드:contentReference[oaicite:5]{index=5}
+        int currentHighest = getCurrentHighestBid(concertId);
         if (bidAmount <= currentHighest) {
             throw new IllegalArgumentException("입찰 금액은 현재 최고가보다 높아야 합니다.");
         }
 
         /* 4) 최소 호가 단위(1,000원) 준수 여부 */
-        final int MIN_STEP = 1_000;                              // 필요하면 상수로 올려두세요
+        final int MIN_STEP = 1_000;
         if ((bidAmount - currentHighest) % MIN_STEP != 0) {
             throw new IllegalArgumentException("입찰 단위는 1,000원이어야 합니다.");
         }
