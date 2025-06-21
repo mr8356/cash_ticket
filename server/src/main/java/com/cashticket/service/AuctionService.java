@@ -279,8 +279,10 @@ public class AuctionService {
             // 각 승자에 대해 AuctionResult 엔티티 생성
             for (int i = 0; i < winnerIds.size(); i++) {
                 final int seatNo = i + 1; // 좌석 번호는 1부터 순차적으로 할당
-                User winner = userRepository.findById(winnerIds.get(i))
-                        .orElseThrow(() -> new AuctionException("승자를 찾을 수 없습니다: " + winnerIds.get(i)));
+                final Long winnerId = winnerIds.get(i);
+                
+                User winner = userRepository.findById(winnerId)
+                        .orElseThrow(() -> new AuctionException("승자를 찾을 수 없습니다: " + winnerId));
                 
                 AuctionResult result = AuctionResult.builder()
                         .auction(auction)
