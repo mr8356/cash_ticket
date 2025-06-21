@@ -34,6 +34,8 @@ public class AuctionController {
     @GetMapping("/{concertId}")
     public String getAuctionDetail(@PathVariable Long concertId, Model model) {
         try {
+            log.debug("경매 상세 페이지 요청 - 콘서트ID: {}", concertId);
+            
             Concert concert = ticketService.getConcertDetail(concertId);
             if (concert == null) {
                 log.error("Concert not found: {}", concertId);
@@ -41,8 +43,12 @@ public class AuctionController {
                 return "error";
             }
             
+            log.debug("콘서트 정보 조회 성공 - 제목: {}", concert.getTitle());
+            
             // 경매가 존재하는지 확인
             boolean isActive = auctionService.isAuctionActive(concertId);
+            log.debug("경매 활성 상태 - 콘서트ID: {}, 활성: {}", concertId, isActive);
+            
             if (!isActive) {
                 // 경매가 없거나 종료된 경우
                 model.addAttribute("concert", concert);
@@ -52,15 +58,20 @@ public class AuctionController {
             }
             
             int currentBid = auctionService.getCurrentHighestBid(concertId);
+            log.debug("현재 최고가 조회 - 콘서트ID: {}, 최고가: {}", concertId, currentBid);
             
             model.addAttribute("concert", concert);
             model.addAttribute("currentBid", currentBid);
             model.addAttribute("isActive", isActive);
             
             return "concert_auction";
+        } catch (RuntimeException e) {
+            log.error("RuntimeException in getAuctionDetail - 콘서트ID: {}, 오류: {}", concertId, e.getMessage(), e);
+            model.addAttribute("error", "콘서트 정보를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
+            return "error";
         } catch (Exception e) {
-            log.error("Error in getAuctionDetail: {}", e.getMessage(), e);
-            model.addAttribute("error", "경매 정보를 불러오는 중 오류가 발생했습니다.");
+            log.error("Unexpected error in getAuctionDetail - 콘서트ID: {}, 오류: {}", concertId, e.getMessage(), e);
+            model.addAttribute("error", "경매 정보를 불러오는 중 예상치 못한 오류가 발생했습니다.");
             return "error";
         }
     }

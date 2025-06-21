@@ -58,26 +58,8 @@
                         return;
                     }
                     
-                    // 입찰 처리
-                    fetch('/auction/bid', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `concertId=${concertId}&bidAmount=${bidAmount}`
-                    })
-                    .then(response => {
-                        console.log('입찰 응답:', response);
-                        if (response.redirected) {
-                            window.location.href = response.url;
-                        } else {
-                            return response.text();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('입찰 처리 오류:', error);
-                        alert('입찰 처리 중 오류가 발생했습니다.');
-                    });
+                    // 결제 페이지로 이동
+                    window.location.href = `/api/auction/orders?concertId=${concertId}&amount=${bidAmount}`;
                 });
             }
         });
