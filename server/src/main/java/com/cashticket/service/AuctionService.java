@@ -126,8 +126,15 @@ public class AuctionService {
             }
 
             // 입찰 횟수 확인
-            String bidCountStr = redisTemplate.opsForValue().get(bidCountKey);
-            int bidCount = bidCountStr != null ? Integer.parseInt(bidCountStr) : 0;
+            Object bidCountValue = redisTemplate.opsForValue().get(bidCountKey);
+            int bidCount = 0;
+            if (bidCountValue != null) {
+                if (bidCountValue instanceof Integer) {
+                    bidCount = (Integer) bidCountValue;
+                } else if (bidCountValue instanceof String) {
+                    bidCount = Integer.parseInt((String) bidCountValue);
+                }
+            }
             log.debug("현재 입찰 횟수 - 사용자ID: {}, 횟수: {}/{}", userId, bidCount, MAX_BID_COUNT);
             
             if (bidCount >= MAX_BID_COUNT) {
@@ -393,8 +400,16 @@ public class AuctionService {
 
         /* 2) 입찰 횟수 제한 확인 */
         String bidCountKey = AUCTION_BID_COUNT_PREFIX + concertId + ":" + userId;
-        String bidCountStr = redisTemplate.opsForValue().get(bidCountKey);
-        int bidCount = bidCountStr != null ? Integer.parseInt(bidCountStr) : 0;
+        Object bidCountValue = redisTemplate.opsForValue().get(bidCountKey);
+        int bidCount = 0;
+        if (bidCountValue != null) {
+            if (bidCountValue instanceof Integer) {
+                bidCount = (Integer) bidCountValue;
+            } else if (bidCountValue instanceof String) {
+                bidCount = Integer.parseInt((String) bidCountValue);
+            }
+        }
+        
         if (bidCount >= MAX_BID_COUNT) {
             throw new BidException("입찰 가능 횟수를 초과했습니다.");
         }
