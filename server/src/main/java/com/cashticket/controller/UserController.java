@@ -99,10 +99,10 @@ public class UserController {
 		return "mypage/favorites";
 	}
 
-	@PostMapping("/mypage/favorites/delete/{concertId}")
+	@DeleteMapping("/mypage/favorites/{concertId}")
 	public String deleteFavorite(@PathVariable Long concertId, @CurrentUser User user) {
 		userService.deleteFavorite(concertId, user);
-		return "redirect:/users/mypage/favorites";
+		return "mypage/favorites";
 	}
 
 	@GetMapping("/me")
