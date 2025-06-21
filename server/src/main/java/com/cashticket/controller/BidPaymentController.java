@@ -44,7 +44,7 @@ public class BidPaymentController {
             model.addAttribute("user", user);
             
             log.info("결제 페이지 모델 설정 완료");
-            return "/payment/index";
+            return "payment/index";
             
         } catch (Exception e) {
             log.error("결제 페이지 로드 중 오류 - 콘서트ID: {}, 금액: {}, 오류: {}", 
