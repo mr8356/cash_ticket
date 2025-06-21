@@ -322,8 +322,21 @@ public class AuctionService {
                 .orElse(null);
         
         if (auction == null) {
-            log.debug("경매 없음 - 콘서트ID: {}", concertId);
-            return false;
+            log.debug("경매 없음 - 자동으로 경매 생성 - 콘서트ID: {}", concertId);
+            // 경매가 없으면 자동으로 생성
+            try {
+                Concert concert = concertRepository.findById(concertId)
+                        .orElseThrow(() -> new AuctionException("콘서트를 찾을 수 없습니다: " + concertId));
+                
+                // 기본 경매 설정 (시작가 10,000원, 공연 시작 1시간 전 종료)
+                startAuction(concertId, 10000, concert.getDateTime().minusHours(1));
+                
+                log.info("경매 자동 생성 완료 - 콘서트ID: {}", concertId);
+                return true;
+            } catch (Exception e) {
+                log.error("경매 자동 생성 실패 - 콘서트ID: {}, 오류: {}", concertId, e.getMessage());
+                return false;
+            }
         }
 
         boolean isActive = auction.getEndTime().isAfter(LocalDateTime.now());
