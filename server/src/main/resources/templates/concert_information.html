@@ -72,8 +72,8 @@
 
     <!-- 하단 버튼 -->
     <div class="mt-4 d-flex justify-content-between align-items-center">
-        <a th:href="@{/concerts}" class="btn btn-outline-secondary">
-            ← 목록으로 돌아가기
+        <a th:href="@{/}" class="btn btn-outline-secondary">
+            ← 홈으로 돌아가기
         </a>
         <div>
             <a th:if="${!concert.isAuction}" th:href="@{/reserve/{id}(id=${concert.id})}" class="btn btn-primary">예매하기</a>
