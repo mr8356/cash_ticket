@@ -52,7 +52,9 @@
     <!-- 오른쪽: 로그인/회원가입/마이페이지 -->
     <div class="d-flex align-items-center gap-3">
         <a href="/login" class="text-decoration-none text-secondary">로그인</a>
-        <a href="/logout" class="text-decoration-none text-secondary">로그아웃</a>
+        <form id="logoutForm" action="/auth/logout" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-link text-decoration-none text-secondary p-0 m-0" style="border: none; background: none;">로그아웃</button>
+        </form>
         <a href="/join" class="text-decoration-none text-secondary">회원가입</a>
         <a href="/users/mypage" class="text-decoration-none text-secondary">마이페이지</a>
     </div>
