@@ -108,7 +108,6 @@ public class UserController {
 		return "redirect:/users/mypage/favorites"; // [!] 이렇게 수정해야 합니다.
 	}
 
-
 	@GetMapping("/me")
 	public ResponseEntity<?> getCurrentUser(@CurrentUser User user) {
 		return ResponseEntity.ok(user);
