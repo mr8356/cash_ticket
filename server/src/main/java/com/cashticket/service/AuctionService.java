@@ -257,37 +257,36 @@ public class AuctionService {
 
     // 경매 상태 조회
     public boolean isAuctionActive(Long concertId) {
-        String endTimeKey = AUCTION_END_TIME_KEY_PREFIX + concertId;
-        String endTimeStr = redisTemplate.opsForValue().get(endTimeKey);
+        Auction auction = auctionRepository.findByConcertId(concertId)
+                .orElse(null);
         
-        if (endTimeStr == null) {
+        if (auction == null) {
             return false;
         }
 
-        return LocalDateTime.parse(endTimeStr).isAfter(LocalDateTime.now());
+        return auction.getEndTime().isAfter(LocalDateTime.now());
     }
 
     // 활성화된 경매 목록 조회
     public Set<Long> getActiveAuctions() {
-        String pattern = AUCTION_END_TIME_KEY_PREFIX + "*";
-        Set<String> keys = redisTemplate.keys(pattern);
+        LocalDateTime now = LocalDateTime.now();
         
-        return keys.stream()
-                .map(key -> Long.parseLong(key.replace(AUCTION_END_TIME_KEY_PREFIX, "")))
-                .filter(this::isAuctionActive)
+        return auctionRepository.findByStatusAndEndTimeAfter(AuctionStatusEnum.OPEN, now)
+                .stream()
+                .map(auction -> auction.getConcert().getId())
                 .collect(Collectors.toSet());
     }
 
     // 경매 종료 시간 조회
     public LocalDateTime getAuctionEndTime(Long concertId) {
-        String endTimeKey = AUCTION_END_TIME_KEY_PREFIX + concertId;
-        String endTimeStr = redisTemplate.opsForValue().get(endTimeKey);
+        Auction auction = auctionRepository.findByConcertId(concertId)
+                .orElse(null);
         
-        if (endTimeStr == null) {
+        if (auction == null) {
             return null;
         }
         
-        return LocalDateTime.parse(endTimeStr);
+        return auction.getEndTime();
     }
 
     // 결제 시 검증 전용 메서드
