@@ -42,6 +42,7 @@
             <h5 class="card-title" th:text="${concert.title}">콘서트명</h5>
             <p class="card-text">
                 일정: <span th:text="${#temporals.format(concert.date, 'yyyy-MM-dd HH:mm')}">2025-06-10</span><br>
+
                 장소: <span th:text="${concert.place}">서울 올림픽공원</span>
             </p>
         </div>
@@ -82,6 +83,13 @@
     <!-- 입찰 실패 메시지 -->
     <div th:if="${error}" class="alert alert-danger" role="alert">
         입찰 금액은 현재 최고가보다 높아야 합니다.
+    </div>
+
+    <!-- 홈으로 버튼 추가 -->
+    <div class="text-end mt-4">
+        <a th:href="@{/}" class="btn btn-outline-primary">
+            <i class="bi bi-house-door"></i> 홈으로
+        </a>
     </div>
 </div>
 

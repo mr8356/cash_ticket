@@ -7,6 +7,9 @@
     <style>
         body {
             background-color: #f8f9fa;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 80px; /* 홈 버튼을 위한 여백 */
         }
         .ticket-card {
             border-radius: 1rem;
@@ -18,6 +21,13 @@
         .badge-title {
             font-size: 0.9rem;
             background-color: #0d6efd;
+        }
+        .home-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
     </style>
 </head>
@@ -59,13 +69,18 @@
 
         <!-- 버튼 영역 -->
         <div class="mt-4 d-flex justify-content-between">
-            <a href="/user/mypage" class="btn btn-outline-secondary">← 마이페이지로 돌아가기</a>
+            <a href="/users/mypage" class="btn btn-outline-secondary">← 마이페이지로 돌아가기</a>
             <a th:if="${result.status == T(com.cashticket.entity.AuctionResultStatusEnum).WINNER}" 
-               th:href="@{'/user/mypage/reservations/' + ${result.id}}" 
+               th:href="@{'/users/mypage/reservations/' + ${result.id}}" 
                class="btn btn-primary">상세 보기</a>
         </div>
     </div>
 </div>
+
+<!-- 홈 버튼 -->
+<a th:href="@{/}" class="btn btn-primary home-button">
+    <i class="bi bi-house-door"></i> 홈으로
+</a>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
