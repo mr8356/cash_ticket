@@ -347,9 +347,7 @@ public class AuctionService {
 
     // 활성화된 경매 목록 조회
     public Set<Long> getActiveAuctions() {
-        LocalDateTime now = LocalDateTime.now();
-        
-        return auctionRepository.findByStatusAndEndTimeAfter(AuctionStatusEnum.OPEN, now)
+        return auctionRepository.findByStatus(AuctionStatusEnum.OPEN)
                 .stream()
                 .map(auction -> auction.getConcert().getId())
                 .collect(Collectors.toSet());

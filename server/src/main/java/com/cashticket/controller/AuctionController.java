@@ -10,6 +10,7 @@ import com.cashticket.service.TicketService;
 import com.cashticket.strategy.ConcertFilterContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -32,8 +33,13 @@ public class AuctionController {
 
     // 경매 상세 페이지
     @GetMapping("/{concertId}")
-    public String getAuctionDetail(@PathVariable Long concertId, Model model) {
+    public String getAuctionDetail(@PathVariable Long concertId, Model model, HttpServletResponse response) {
         try {
+            // 캐시 방지 헤더 추가
+            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.setHeader("Pragma", "no-cache");
+            response.setHeader("Expires", "0");
+            
             log.debug("경매 상세 페이지 요청 - 콘서트ID: {}", concertId);
             
             Concert concert = ticketService.getConcertDetail(concertId);
@@ -63,6 +69,9 @@ public class AuctionController {
             model.addAttribute("concert", concert);
             model.addAttribute("currentBid", currentBid);
             model.addAttribute("isActive", isActive);
+            
+            log.debug("모델 속성 설정 완료 - 콘서트ID: {}, isActive: {}, currentBid: {}", 
+                concertId, isActive, currentBid);
             
             return "concert_auction";
         } catch (RuntimeException e) {

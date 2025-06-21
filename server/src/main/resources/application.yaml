@@ -21,6 +21,9 @@ spring:
     mode: HTML
     encoding: UTF-8
     cache: false
+    template-resolver-order: 1
+    check-template: true
+    check-template-location: true
   session:
     store-type: redis
     redis:
