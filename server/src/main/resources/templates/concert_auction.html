@@ -42,24 +42,23 @@
             return `${min}분 ${sec < 10 ? '0' + sec : sec}초`;
         }
 
-        // 입찰 버튼 클릭 이벤트
+        // 폼 제출 이벤트
         document.addEventListener('DOMContentLoaded', function() {
-            const payBtn = document.getElementById('payBtn');
-            if (payBtn) {
-                payBtn.addEventListener('click', function() {
-                    console.log('입찰 버튼 클릭');
+            const bidForm = document.querySelector('form[th\\:action*="orders"]');
+            if (bidForm) {
+                bidForm.addEventListener('submit', function(e) {
+                    console.log('입찰 폼 제출');
                     const bidAmount = document.getElementById('bidAmount').value;
-                    const concertId = document.getElementById('bidForm').dataset.concert;
                     
-                    console.log('입찰 정보:', { concertId, bidAmount });
+                    console.log('입찰 정보:', { bidAmount });
                     
                     if (!bidAmount || bidAmount <= 0) {
+                        e.preventDefault();
                         alert('유효한 입찰 금액을 입력해주세요.');
                         return;
                     }
                     
-                    // 결제 페이지로 이동
-                    window.location.href = `/api/auction/orders?concertId=${concertId}&amount=${bidAmount}`;
+                    console.log('폼 제출 진행 - 결제 페이지로 이동');
                 });
             }
         });
@@ -105,14 +104,15 @@
             <p>⏳ 남은 시간: <span id="countdown">--:--</span></p>
 
             <!-- 입찰 폼 -->
-            <form id="bidForm" th:data-concert="${concert.id}" class="mt-3">
+            <form th:action="@{/api/auction/orders}" method="get" class="mt-3">
                 <div class="mb-3">
                     <label for="bidAmount" class="form-label">입찰 금액 (원)</label>
-                    <input id="bidAmount" name="bidAmount" type="number" class="form-control"
+                    <input id="bidAmount" name="amount" type="number" class="form-control"
                            th:min="${currentBid + 1000}" step="1000" required>
                     <small class="text-muted">최소 입찰 단위: 1,000원</small>
                 </div>
-                <button id="payBtn" type="button" class="btn btn-success">입찰하기</button>
+                <input type="hidden" name="concertId" th:value="${concert.id}">
+                <button type="submit" class="btn btn-success">입찰하기</button>
             </form>
         </div>
     </div>
