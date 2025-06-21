@@ -28,20 +28,16 @@
 
 <div class="container py-5">
 
-    <!-- 제목 영역 -->
     <div class="text-center mb-5">
         <h2 class="fw-bold" th:text="${concert.title}">[콘서트 제목]</h2>
         <p class="text-muted" th:text="'by ' + ${concert.artist}">아티스트 이름</p>
     </div>
 
-    <!-- 콘서트 정보 카드 -->
     <div class="card shadow-sm mb-5">
         <div class="row g-0">
-            <!-- 포스터 -->
             <div class="col-md-5 text-center p-3">
                 <img th:src="${concert.posterImgURL}" alt="포스터 이미지" class="poster-img w-100" />
             </div>
-            <!-- 상세 정보 -->
             <div class="col-md-7 p-4">
                 <h5 class="mb-3">📍 장소</h5>
                 <p th:text="${concert.place}">예술의 전당 콘서트홀</p>
@@ -52,18 +48,16 @@
                 <h5 class="mb-3">🎶 장르 / 카테고리</h5>
                 <p th:text="${concert.category}">팝 / 라이브 콘서트</p>
 
-                <!-- 찜하기 버튼 오른쪽 하단 -->
                 <div class="position-absolute bottom-0 end-0 p-3">
                     <button id="likeBtn" class="like-button" onclick="toggleLike()">
-                        <span id="heartIcon">♡</span>
-                        <span class="like-text">찜하기</span>
+                        <span id="heartIcon" th:text="${isLiked} ? '♥' : '♡'"></span>
+                        <span class="like-text" th:text="${isLiked} ? '찜 완료' : '찜하기'"></span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 상세 설명 -->
     <div class="card p-4 shadow-sm bg-white">
         <h5 class="fw-bold mb-3">📄 콘서트 상세 설명</h5>
         <p th:text="${concert.description}">
@@ -71,11 +65,9 @@
         </p>
     </div>
 
-    <!-- 하단 버튼 -->
     <div class="text-end mt-4 d-flex justify-content-end align-items-center gap-3">
 
 
-        <!-- 예매 및 목록 -->
         <a href="/concerts" class="btn btn-outline-secondary">← 목록으로 돌아가기</a>
         <a th:if="${!concert.isAuction}" th:href="@{/reserve/{id}(id=${concert.id})}" class="btn btn-primary">예매하기</a>
         <a th:if="${concert.isAuction}" th:href="@{/auction/{id}(id=${concert.id})}" class="btn btn-primary">경매 참여하기</a>
@@ -84,17 +76,45 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    let liked = false;
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const concertId = /*[[${concert.id}]]*/ null;
+    const heartIcon = document.getElementById("heartIcon");
+    const likeText = document.querySelector("#likeBtn .like-text");
 
-    function toggleLike() {
-        liked = !liked;
-        const heart = document.getElementById("heartIcon");
-        heart.textContent = liked ? '♥' : '♡';
-
-        // 추후 서버 연동 시 fetch() 등으로 전송 가능
-        console.log("찜 상태:", liked);
+    function updateButtonUI(liked) {
+        heartIcon.textContent = liked ? '♥' : '♡';
+        likeText.textContent = liked ? '찜 완료' : '찜하기';
     }
+
+    async function toggleLike() {
+        if (!concertId) return;
+
+        try {
+            const response = await fetch(`/tickets/${concertId}/like`, {
+                method: 'POST',
+                headers: {
+                    // Spring Security를 사용한다면 CSRF 토큰 헤더를 추가해야 합니다.
+                    // 'X-CSRF-TOKEN': csrfToken
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json(); // { "liked": true } or { "liked": false }
+                updateButtonUI(data.liked);
+            } else if (response.status === 401) {
+                alert('찜하기는 로그인 후 이용 가능합니다.');
+                // 필요시 로그인 페이지로 리다이렉트
+                // window.location.href = '/login';
+            } else {
+                alert('요청 처리 중 오류가 발생했습니다.');
+            }
+        } catch (error) {
+            console.error('찜하기 기능 처리 중 에러 발생:', error);
+            alert('네트워크 오류가 발생했습니다.');
+        }
+    }
+    /*]]>*/
 </script>
 </body>
 </html>
