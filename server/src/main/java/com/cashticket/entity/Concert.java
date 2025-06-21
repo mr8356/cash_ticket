@@ -42,5 +42,6 @@ public class Concert {
     private String category;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isAuction = false;
 } 

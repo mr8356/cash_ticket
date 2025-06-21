@@ -24,6 +24,7 @@ public class Auction {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private AuctionStatusEnum status = AuctionStatusEnum.OPEN;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
