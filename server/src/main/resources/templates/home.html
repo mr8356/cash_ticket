@@ -71,19 +71,61 @@
 
 <!-- 카테고리 아이콘 목록 -->
 <div class="container mt-4">
-    <div class="row text-center mt-3 justify-content-center">
-        <div class="col-2"></div> <!-- 왼쪽 여백 -->
-        <div class="col-2"><div>🎭</div><div>연극</div></div>
-        <div class="col-2"><div>🖼️</div><div>전시/행사</div></div>
-        <div class="col-2">
-            <a href="/auction" class="text-decoration-none text-dark">
-                <div>🎯</div>
-                <div>경매</div>
+    <!-- 상단 4개 카테고리 -->
+    <div class="row text-center justify-content-center">
+        <div class="col-3">
+            <a href="/tickets/search?category=뮤지컬" class="text-decoration-none text-dark">
+                <div>😊</div><div>뮤지컬</div>
             </a>
         </div>
+        <div class="col-3">
+            <a href="/tickets/search?category=콘서트" class="text-decoration-none text-dark">
+                <div>🎤</div><div>콘서트</div>
+            </a>
+        </div>
+        <div class="col-3">
+            <a href="/tickets/search?category=스포츠" class="text-decoration-none text-dark">
+                <div>🏀</div><div>스포츠</div>
+            </a>
+        </div>
+        <div class="col-3">
+            <a href="/tickets/search?category=클래식" class="text-decoration-none text-dark">
+                <div>🎻</div><div>클래식</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 하단 카테고리 (간격 조정) -->
+    <div class="row text-center mt-3 justify-content-center">
+        <div class="col-1"></div>
+
+        <div class="col-3">
+            <a href="/tickets/search?category=연극" class="text-decoration-none text-dark">
+                <div>🎭</div><div>연극</div>
+            </a>
+        </div>
+
+        <div class="col-3">
+            <a href="/tickets/search?category=전시/행사" class="text-decoration-none text-dark">
+                <div>🖼️</div><div>전시/행사</div>
+            </a>
+        </div>
+
+        <div class="col-3">
+            <a href="/auction" class="text-decoration-none text-dark">
+                <div>🎯</div><div>경매</div>
+            </a>
+        </div>
+
+        <div class="col-2"></div>
+    </div>
+</div>
+
+
         <div class="col-2"></div> <!-- 오른쪽 여백 -->
     </div>
 </div>
+
 
 <div class="container mt-5">
     <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -152,4 +194,3 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
