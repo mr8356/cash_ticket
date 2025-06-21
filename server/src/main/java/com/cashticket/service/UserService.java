@@ -99,8 +99,8 @@ public class UserService {
 	public List<Concert> getFavorites(User user) {
 		List<LikeTable> likes = likeRepository.findByUser(user);
 		return likes.stream()
-					.map(LikeTable::getConcert)
-					.collect(Collectors.toList());
+				.map(LikeTable::getConcert)
+				.collect(Collectors.toList());
 	}
 
 	@Transactional

@@ -71,7 +71,7 @@
 
 
         <!-- 예매 및 목록 -->
-        <a href="/concerts" class="btn btn-outline-secondary">← 목록으로 돌아가기</a>
+        <a href="/" class="btn btn-outline-secondary">← 홈으로 돌아가기</a>
         <a th:if="${!concert.isAuction}" th:href="@{/reserve/{id}(id=${concert.id})}" class="btn btn-primary">예매하기</a>
         <a th:if="${concert.isAuction}" th:href="@{/auction/{id}(id=${concert.id})}" class="btn btn-primary">경매 참여하기</a>
     </div>

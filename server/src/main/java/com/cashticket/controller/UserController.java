@@ -53,7 +53,10 @@ public class UserController {
 					  @RequestParam String email,
 					  @RequestParam LocalDate birthDay,
 					  @RequestParam(required = false) String phoneNumber,
-					  @RequestParam(required = false) String password) {
+					  @RequestParam(required = false) String password,
+					  Model model) {
+		
+		
 		User updatedUser = User.builder()
 				.id(user.getId())
 				.userId(user.getUserId())
@@ -94,8 +97,8 @@ public class UserController {
 	// 사용자의 찜목록 조회
 	@GetMapping("/mypage/favorites")
 	public String getFavorites(@CurrentUser User user, Model model) {
-		List<Concert> favorites = userService.getFavorites(user);
-		model.addAttribute("concerts", favorites);
+		List<Concert> concerts = userService.getFavorites(user);
+		model.addAttribute("concerts", concerts);
 		return "mypage/favorites";
 	}
 
@@ -104,6 +107,7 @@ public class UserController {
 		userService.deleteFavorite(concertId, user);
 		return "redirect:/users/mypage/favorites"; // [!] 이렇게 수정해야 합니다.
 	}
+
 
 	@GetMapping("/me")
 	public ResponseEntity<?> getCurrentUser(@CurrentUser User user) {
