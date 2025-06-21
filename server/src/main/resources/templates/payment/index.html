@@ -3,35 +3,59 @@
 <head>
     <meta charset="utf-8">
     <title>사전결제</title>
-    <script src="https://js.tosspayments.com/v1/payment-widget"></script>
-    <style>.btn{padding:12px 24px;font-size:16px;background:#3182f6;color:#fff;border:0;cursor:pointer}</style>
+    <script src="https://js.tosspayments.com/v1"></script>
+    <style>
+        .btn{padding:12px 24px;font-size:16px;background:#3182f6;color:#fff;border:0;cursor:pointer}
+        .container { max-width: 400px; margin: 50px auto; padding: 20px; }
+        h2 { text-align: center; margin-bottom: 30px; }
+        .amount { text-align: center; font-size: 24px; font-weight: bold; color: #3182f6; margin: 20px 0; }
+        .payment-info { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    </style>
 </head>
 <body>
-<h2 th:text="'경매 #' + ${auctionId} + ' 사전결제'">경매 사전결제</h2>
+<div class="container">
+    <h2 th:text="'경매 #' + ${concertId} + ' 사전결제'">경매 사전결제</h2>
+    
+    <div class="amount" th:text="${#numbers.formatInteger(amount,0)} + '원'">50,000원</div>
+    
+    <div class="payment-info">
+        <p><strong>결제 수단:</strong> 신용카드/체크카드</p>
+        <p><strong>결제 방식:</strong> 일시불</p>
+    </div>
 
-<button  id="pay-btn"
-         class="btn"
-         th:text="${#numbers.formatInteger(amount,0)} + '원 결제하기'">
-    50,000원 결제하기
-</button>
+    <button id="pay-btn" class="btn" th:text="${#numbers.formatInteger(amount,0)} + '원 카드결제'">
+        50,000원 카드결제
+    </button>
+</div>
 
-<!-- Inline-JS : 주석토큰(*)으로 IDE 경고 제거 -->
 <script th:inline="javascript">
-    const CK         = 'test_ck_5OWRapdA8dd9zMMqkWbY8o1zEqZK';
-    const AUCTION_ID = /*[[${auctionId}]]*/ 0;
-    const AMOUNT     = /*[[${amount}]]*/ 0;
-    const CUSTOMER   = /*[['user-' + ${user.id}]]*/ 'anonymous';
+    const CLIENT_KEY = 'test_ck_5OWRapdA8dd9zMMqkWbY8o1zEqZK';
+    const AUCTION_ID = /*[[${concertId}]]*/ 0;
+    const AMOUNT     = /*[[${amount}]]*/ 50000;
 
-    const widget = PaymentWidget(CK, CUSTOMER);
+    const tossPayments = TossPayments(CLIENT_KEY);
 
-    document.getElementById('pay-btn').onclick = () =>
-        widget.requestPayment('카드', {
-            orderId   : 'order-' + Date.now(),
-            orderName : '경매 사전결제',
-            amount    : AMOUNT,
-            successUrl: `/payments/success?auctionId=${AUCTION_ID}&amount=${AMOUNT}`,
-            failUrl   : '/payments/fail'
-        });
+    // 카드 결제 버튼 클릭 시 결제 요청
+    document.getElementById('pay-btn').onclick = async () => {
+        try {
+            await tossPayments.requestPayment('카드', {
+                amount: AMOUNT,
+                orderId: 'auction-' + AUCTION_ID + '-' + Date.now(),
+                orderName: `경매 #${AUCTION_ID} 사전결제`,
+                customerName: /*[[${user.nickname}]]*/ '고객',
+                successUrl: window.location.origin + `/api/auction/success?concertId=${AUCTION_ID}&amount=${AMOUNT}`,
+                failUrl: window.location.origin + '/api/auction/fail'
+            });
+        } catch (error) {
+            console.error('결제 요청 실패:', error);
+            
+            if (error.code === 'USER_CANCEL') {
+                alert('결제가 취소되었습니다.');
+            } else {
+                alert('결제 중 오류가 발생했습니다: ' + (error.message || '알 수 없는 오류'));
+            }
+        }
+    };
 </script>
 </body>
 </html>
