@@ -34,7 +34,7 @@ spring:
         order_updates: true
         globally_quoted_identifiers: false
         hbm2ddl:
-          auto: ${DDL_AUTO:update}
+          auto: none
           schema_generation:
             create_source: metadata
             create_order: tables-then-constraints
@@ -61,3 +61,22 @@ spring:
       path: /h2-console
       settings:
         web-allow-others: true
+
+# Spring Boot Actuator 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: webapp
