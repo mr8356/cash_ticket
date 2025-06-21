@@ -29,7 +29,13 @@
                 <p class="mb-1" th:text="'입찰 금액: ' + ${#numbers.formatInteger(bid.amount, 0, 'COMMA')} + '원'">
                     입찰 금액
                 </p>
-                <small class="text-muted" th:text="'경매 상태: ' + ${bid.auction.status.description}">경매 상태</small>
+                <small class="text-muted">
+                    경매 상태:
+                    <span th:switch="${bid.auction.status}">
+                        <span th:case="${T(com.cashticket.entity.AuctionStatusEnum).OPEN}" class="badge bg-success">진행중</span>
+                        <span th:case="${T(com.cashticket.entity.AuctionStatusEnum).CLOSED}" class="badge bg-secondary">종료</span>
+                    </span>
+                </small>
                 <div class="mt-2">
                      <a th:href="@{/auction/{concertId}(concertId=${bid.auction.concert.id})}" class="btn btn-sm btn-primary">경매 바로가기</a>
                 </div>
