@@ -339,8 +339,8 @@ public class AuctionService {
             }
         }
 
-        boolean isActive = auction.getEndTime().isAfter(LocalDateTime.now());
-        log.debug("경매 상태 - 콘서트ID: {}, 활성: {}, 종료시간: {}", concertId, isActive, auction.getEndTime());
+        boolean isActive = auction.getStatus() == AuctionStatusEnum.OPEN;
+        log.debug("경매 상태 - 콘서트ID: {}, 활성: {}, 상태: {}", concertId, isActive, auction.getStatus());
         
         return isActive;
     }
