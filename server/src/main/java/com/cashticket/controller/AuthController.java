@@ -68,13 +68,14 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @ResponseBody
     public String logout(HttpSession session) {
         // Redis 세션에서 사용자 정보 삭제
         String sessionId = session.getId();
         redisTemplate.delete("spring:session:" + sessionId + ":userId");
         
         session.invalidate();
-        return "redirect:/";
+        return "<script>alert('로그아웃 되었습니다.'); location.href='/';</script>";
     }
 
     @GetMapping("/me")
