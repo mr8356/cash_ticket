@@ -6,10 +6,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    // NoResourceFoundException 무시 (favicon.ico 등)
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Void> handleNoResourceFoundException(NoResourceFoundException e) {
+        // 리소스를 찾을 수 없는 경우 404 응답만 반환하고 로그는 남기지 않음
+        return ResponseEntity.notFound().build();
+    }
 
     // 커스텀 경매 예외 처리
     @ExceptionHandler(AuctionException.class)
