@@ -18,15 +18,12 @@
 <body class="bg-light">
 
 <div class="container py-5">
-    <!-- 타이틀 -->
     <div class="text-center mb-5">
         <h2 class="fw-bold">⭐ 찜한 목록</h2>
         <p class="text-muted">내가 찜한 공연/전시 정보를 확인하고 예매해보세요!</p>
     </div>
 
-    <!-- 찜 리스트 -->
     <div class="row g-4">
-        <!-- 찜 항목 반복 -->
         <div class="col-md-4" th:each="concert : ${concerts}">
             <div class="card wishlist-card shadow-sm">
                 <img th:src="${concert.posterImgURL}" alt="포스터" class="wishlist-img w-100" />
@@ -38,12 +35,13 @@
                     <div class="d-flex justify-content-between">
                         <a th:if="${concert.isAuction}" th:href="@{/auction/{id}(id=${concert.id})}" class="btn btn-sm btn-primary">경매 참여</a>
                         <a th:unless="${concert.isAuction}" th:href="@{/reserve/{id}(id=${concert.id})}" class="btn btn-sm btn-primary">예매하기</a>
-                        <a th:href="@{/wishlist/delete/{id}(id=${concert.id})}" class="btn btn-sm btn-outline-danger">삭제</a>
+                        <form th:action="@{/users/mypage/favorites/delete/{id}(id=${concert.id})}" method="post" onsubmit="return confirm('정말로 찜 목록에서 삭제하시겠습니까?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- 반복 끝 -->
     </div>
 </div>
 
