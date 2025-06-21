@@ -12,23 +12,91 @@
         const stompClient = Stomp.over(socket);
         const concertId = /*[[${concert.id}]]*/ null;
 
+        console.log('경매 페이지 로드 - 콘서트ID:', concertId);
+
         stompClient.connect({}, function(frame) {
+            console.log('WebSocket 연결 성공');
             stompClient.subscribe('/topic/auction/' + concertId, function(message) {
+                console.log('경매 업데이트 수신:', message.body);
                 const data = JSON.parse(message.body);
                 updateAuctionInfo(data);
             });
+        }, function(error) {
+            console.error('WebSocket 연결 실패:', error);
         });
 
         function updateAuctionInfo(data) {
-            document.getElementById('currentBid').textContent = data.currentBid.toLocaleString();
-            document.getElementById('countdown').textContent = formatTimeLeft(data.timeLeft);
-            document.getElementById('bidAmount').min = data.currentBid + 1000;
+            console.log('경매 정보 업데이트:', data);
+            try {
+                document.getElementById('currentBid').textContent = data.currentBid.toLocaleString();
+                document.getElementById('countdown').textContent = formatTimeLeft(data.timeLeft);
+                document.getElementById('bidAmount').min = data.currentBid + 1000;
+            } catch (error) {
+                console.error('경매 정보 업데이트 실패:', error);
+            }
         }
 
         function formatTimeLeft(seconds) {
             const min = Math.floor(seconds / 60);
             const sec = seconds % 60;
             return `${min}분 ${sec < 10 ? '0' + sec : sec}초`;
+        }
+
+        // 입찰 버튼 클릭 이벤트
+        document.addEventListener('DOMContentLoaded', function() {
+            const payBtn = document.getElementById('payBtn');
+            if (payBtn) {
+                payBtn.addEventListener('click', function() {
+                    console.log('입찰 버튼 클릭');
+                    const bidAmount = document.getElementById('bidAmount').value;
+                    const concertId = document.getElementById('bidForm').dataset.concert;
+                    
+                    console.log('입찰 정보:', { concertId, bidAmount });
+                    
+                    if (!bidAmount || bidAmount <= 0) {
+                        alert('유효한 입찰 금액을 입력해주세요.');
+                        return;
+                    }
+                    
+                    // 입찰 처리
+                    fetch('/auction/bid', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `concertId=${concertId}&bidAmount=${bidAmount}`
+                    })
+                    .then(response => {
+                        console.log('입찰 응답:', response);
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            return response.text();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('입찰 처리 오류:', error);
+                        alert('입찰 처리 중 오류가 발생했습니다.');
+                    });
+                });
+            }
+        });
+
+        // 경매 정보 새로고침 함수
+        function refreshAuctionInfo() {
+            console.log('경매 정보 새로고침');
+            const concertId = /*[[${concert.id}]]*/ null;
+            
+            fetch(`/auction/${concertId}/current-bid`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('새로고침된 최고가:', data);
+                    document.getElementById('currentBid').textContent = data.toLocaleString();
+                    document.getElementById('bidAmount').min = data + 1000;
+                })
+                .catch(error => {
+                    console.error('정보 새로고침 실패:', error);
+                });
         }
     </script>
 </head>
@@ -76,13 +144,43 @@
     </div>
 
     <!-- 입찰 성공 메시지 -->
-    <div th:if="${success}" class="alert alert-success" role="alert">
-        입찰이 성공적으로 완료되었습니다!
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>✅ 성공!</strong> <span th:text="${success}">입찰이 성공적으로 완료되었습니다!</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
     <!-- 입찰 실패 메시지 -->
-    <div th:if="${error}" class="alert alert-danger" role="alert">
-        입찰 금액은 현재 최고가보다 높아야 합니다.
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>❌ 오류!</strong> <span th:text="${error}">입찰 처리에 실패했습니다.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- 개발자 디버깅 정보 (개발 환경에서만 표시) -->
+    <div th:if="${@environment.getActiveProfiles().length > 0 and @environment.getActiveProfiles()[0] == 'dev'}" 
+         class="card mb-4 border-warning">
+        <div class="card-header bg-warning text-dark">
+            <h6 class="mb-0">🔧 개발자 디버깅 정보</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>콘서트 정보:</strong><br>
+                    ID: <span th:text="${concert.id}">-</span><br>
+                    제목: <span th:text="${concert.title}">-</span><br>
+                    장소: <span th:text="${concert.place}">-</span><br>
+                    날짜: <span th:text="${#temporals.format(concert.date, 'yyyy-MM-dd HH:mm')}">-</span>
+                </div>
+                <div class="col-md-6">
+                    <strong>경매 정보:</strong><br>
+                    활성 상태: <span th:text="${isActive}" class="badge" 
+                                   th:classappend="${isActive ? 'bg-success' : 'bg-danger'}">-</span><br>
+                    현재 최고가: <span th:text="${#numbers.formatInteger(currentBid, 3, 'COMMA')}">-</span>원<br>
+                    <button class="btn btn-sm btn-outline-info mt-2" onclick="refreshAuctionInfo()">
+                        🔄 정보 새로고침
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- 홈으로 버튼 추가 -->
