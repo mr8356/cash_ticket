@@ -29,10 +29,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.MySQLDialect}
         order_inserts: true
         order_updates: true
-        globally_quoted_identifiers: true
+        globally_quoted_identifiers: false
         hbm2ddl:
           auto: create-drop
           schema_generation:
@@ -51,10 +51,10 @@ spring:
             factory_class: org.hibernate.cache.internal.NoCachingRegionFactory
         generate_statistics: false
   datasource:
-    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.h2.Driver}
-    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:testdb;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
-    username: ${SPRING_DATASOURCE_USERNAME:sa}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:com.mysql.cj.jdbc.Driver}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/cashticket?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
   h2:
     console:
       enabled: true
