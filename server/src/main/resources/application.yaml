@@ -73,11 +73,14 @@ spring:
 logging:
   level:
     root: INFO
+    com.cashticket.service.AuctionService: WARN  # AuctionService 로그 줄이기
     com.cashticket: DEBUG  # 우리 애플리케이션 패키지는 DEBUG 레벨
     org.springframework.web: DEBUG  # Spring Web DEBUG
     org.hibernate.SQL: WARN  # SQL 로그 끄기
     org.hibernate.type.descriptor.sql.BasicBinder: WARN  # SQL 파라미터 로그 끄기
     org.springframework.security: DEBUG  # Spring Security DEBUG
+    org.springframework.scheduling: WARN  # 스케줄러 로그 줄이기
+    org.springframework.messaging: WARN  # WebSocket 메시징 로그 줄이기
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

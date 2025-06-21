@@ -56,6 +56,11 @@ public class BidPaymentController {
     @GetMapping("/success")
     public String success(@CurrentUser User user, @RequestParam String concertId, @RequestParam String amount) {
         try {
+            if (user == null) {
+                log.error("사용자가 로그인되지 않음");
+                return "redirect:/login";
+            }
+            
             // 결제 성공 후 실제 입찰 처리
             boolean success = auctionService.processBidAfterPayment(
                 Long.parseLong(concertId), 
@@ -64,23 +69,24 @@ public class BidPaymentController {
             );
             
             if (success) {
-                return "/payment/success";
+                return "payment/success";
             } else {
-                return "/payment/fail";
+                return "payment/fail";
             }
         } catch (Exception e) {
-            // 입찰 처리 실패 시
-            return "/payment/fail";
+            log.error("입찰 처리 실패 - 콘서트ID: {}, 사용자ID: {}, 금액: {}, 오류: {}", 
+                concertId, user != null ? user.getId() : "null", amount, e.getMessage(), e);
+            return "error";
         }
     }
 
     @GetMapping("/fail")
     public String fail(@CurrentUser User user) {
-        return "/payment/fail";
+        return "payment/fail";
     }
 
     @GetMapping("/cancel")
     public String cancel(@CurrentUser User user) {
-        return "/payment/cancel";
+        return "payment/cancel";
     }
 }
