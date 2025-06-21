@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>입찰 내역</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card { transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">🔨 입찰 내역</h2>
+            <a th:href="@{/users/mypage}" class="btn btn-outline-secondary">마이페이지로 돌아가기</a>
+        </div>
+
+        <div th:if="${bids.isEmpty()}" class="alert alert-info text-center" role="alert">
+            아직 입찰 내역이 없습니다. 마음에 드는 경매에 참여해보세요!
+        </div>
+
+        <div th:unless="${bids.isEmpty()}" class="list-group shadow-sm">
+            <div th:each="bid : ${bids}" class="list-group-item list-group-item-action flex-column align-items-start mb-2 border-0 rounded">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1" th:text="${bid.auction.concert.title}">콘서트 제목</h5>
+                    <small th:text="${#temporals.format(bid.bidTime, 'yyyy-MM-dd HH:mm')}">입찰 시간</small>
+                </div>
+                <p class="mb-1" th:text="'입찰 금액: ' + ${#numbers.formatInteger(bid.amount, 0, 'COMMA')} + '원'">
+                    입찰 금액
+                </p>
+                <small class="text-muted" th:text="'경매 상태: ' + ${bid.auction.status.description}">경매 상태</small>
+                <div class="mt-2">
+                     <a th:href="@{/auction/{concertId}(concertId=${bid.auction.concert.id})}" class="btn btn-sm btn-primary">경매 바로가기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

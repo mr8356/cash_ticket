@@ -42,7 +42,7 @@ public class AuctionController {
             
             log.debug("경매 상세 페이지 요청 - 콘서트ID: {}", concertId);
             
-            Concert concert = ticketService.getConcertDetail(concertId);
+        Concert concert = ticketService.getConcertDetail(concertId);
             if (concert == null) {
                 log.error("Concert not found: {}", concertId);
                 model.addAttribute("error", "콘서트를 찾을 수 없습니다.");
@@ -63,17 +63,17 @@ public class AuctionController {
                 return "concert_auction";
             }
             
-            int currentBid = auctionService.getCurrentHighestBid(concertId);
+        int currentBid = auctionService.getCurrentHighestBid(concertId);
             log.debug("현재 최고가 조회 - 콘서트ID: {}, 최고가: {}", concertId, currentBid);
-            
-            model.addAttribute("concert", concert);
-            model.addAttribute("currentBid", currentBid);
-            model.addAttribute("isActive", isActive);
-            
+        
+        model.addAttribute("concert", concert);
+        model.addAttribute("currentBid", currentBid);
+        model.addAttribute("isActive", isActive);
+        
             log.debug("모델 속성 설정 완료 - 콘서트ID: {}, isActive: {}, currentBid: {}", 
                 concertId, isActive, currentBid);
             
-            return "concert_auction";
+        return "concert_auction";
         } catch (RuntimeException e) {
             log.error("RuntimeException in getAuctionDetail - 콘서트ID: {}, 오류: {}", concertId, e.getMessage(), e);
             model.addAttribute("error", "콘서트 정보를 불러오는 중 오류가 발생했습니다: " + e.getMessage());
@@ -103,12 +103,12 @@ public class AuctionController {
                 model.addAttribute("error", "유효하지 않은 입찰 금액입니다.");
                 return "redirect:/auction/" + concertId;
             }
-            
-            boolean success = auctionService.placeBid(concertId, user.getId(), bidAmount);
-            
-            if (success) {
+        
+        boolean success = auctionService.placeBid(concertId, user.getId(), bidAmount);
+        
+        if (success) {
                 model.addAttribute("success", "입찰이 성공적으로 처리되었습니다.");
-            } else {
+        } else {
                 model.addAttribute("error", "입찰 처리에 실패했습니다. 경매가 종료되었거나 유효하지 않은 금액입니다.");
             }
             
@@ -134,11 +134,11 @@ public class AuctionController {
     @ResponseBody
     public ResponseEntity<String> endAuction(@PathVariable Long concertId) {
         try {
-            boolean success = auctionService.endAuction(concertId);
-            
-            if (success) {
-                return ResponseEntity.ok("경매가 성공적으로 종료되었습니다.");
-            } else {
+        boolean success = auctionService.endAuction(concertId);
+        
+        if (success) {
+            return ResponseEntity.ok("경매가 성공적으로 종료되었습니다.");
+        } else {
                 return ResponseEntity.badRequest().body("경매 종료 처리에 실패했습니다. 입찰자가 없거나 이미 종료된 경매일 수 있습니다.");
             }
         } catch (AuctionException e) {
@@ -155,8 +155,8 @@ public class AuctionController {
     @ResponseBody
     public ResponseEntity<Integer> getCurrentBid(@PathVariable Long concertId) {
         try {
-            int currentBid = auctionService.getCurrentHighestBid(concertId);
-            return ResponseEntity.ok(currentBid);
+        int currentBid = auctionService.getCurrentHighestBid(concertId);
+        return ResponseEntity.ok(currentBid);
         } catch (AuctionException e) {
             log.warn("Auction not found for current bid: {}", e.getMessage());
             return ResponseEntity.badRequest().body(0);

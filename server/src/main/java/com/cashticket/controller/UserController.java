@@ -108,6 +108,14 @@ public class UserController {
 		return "redirect:/users/mypage/favorites"; // [!] 이렇게 수정해야 합니다.
 	}
 
+	// 사용자의 입찰 내역 조회
+	@GetMapping("/mypage/bids")
+	public String getBidHistory(@CurrentUser User user, Model model) {
+		List<com.cashticket.entity.Bid> bids = userService.getBidHistory(user);
+		model.addAttribute("bids", bids);
+		return "mypage/bid-history";
+	}
+
 	@GetMapping("/me")
 	public ResponseEntity<?> getCurrentUser(@CurrentUser User user) {
 		return ResponseEntity.ok(user);

@@ -135,15 +135,6 @@ public class AuctionService {
                 throw new BidException("입찰 가능 횟수를 초과했습니다. (최대 " + MAX_BID_COUNT + "회)");
             }
 
-            // 현재 최고가 확인
-            Double currentHighestBid = redisTemplate.opsForZSet().score(auctionKey, currentBids.iterator().next());
-            log.debug("현재 최고가: {}, 입찰 시도 금액: {}", currentHighestBid, bidAmount);
-            
-            if (currentHighestBid != null && bidAmount <= currentHighestBid) {
-                log.warn("입찰 금액 부족 - 최고가: {}, 시도 금액: {}", currentHighestBid, bidAmount);
-                throw new BidException("입찰 금액은 현재 최고가(" + currentHighestBid.intValue() + "원)보다 높아야 합니다.");
-            }
-
             // 사용자의 가장 최근 이전 입찰 삭제
             Set<String> allBids = redisTemplate.opsForZSet().range(auctionKey, 0, -1);
             String lastUserBidId = null;
@@ -406,18 +397,6 @@ public class AuctionService {
         int bidCount = bidCountStr != null ? Integer.parseInt(bidCountStr) : 0;
         if (bidCount >= MAX_BID_COUNT) {
             throw new BidException("입찰 가능 횟수를 초과했습니다.");
-        }
-
-        /* 3) 현재 최고가보다 높은가? */
-        int currentHighest = getCurrentHighestBid(concertId);
-        if (bidAmount <= currentHighest) {
-            throw new BidException("입찰 금액은 현재 최고가보다 높아야 합니다.");
-        }
-
-        /* 4) 최소 호가 단위(1,000원) 준수 여부 */
-        final int MIN_STEP = 1_000;
-        if ((bidAmount - currentHighest) % MIN_STEP != 0) {
-            throw new BidException("입찰 단위는 1,000원이어야 합니다.");
         }
     }
 

@@ -5,8 +5,10 @@ import com.cashticket.entity.AuctionResult;
 import com.cashticket.entity.AuctionResultStatusEnum;
 import com.cashticket.entity.Concert;
 import com.cashticket.entity.LikeTable;
+import com.cashticket.entity.Bid;
 import com.cashticket.repository.UserRepository;
 import com.cashticket.repository.AuctionResultRepository;
+import com.cashticket.repository.BidRepository;
 import com.cashticket.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDate;
@@ -22,6 +24,7 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final AuctionResultRepository auctionResultRepository;
 	private final LikeRepository likeRepository;
+	private final BidRepository bidRepository;
 
 	@Transactional
 	public User register(User user) {
@@ -108,5 +111,9 @@ public class UserService {
 		LikeTable like = likeRepository.findByConcertIdAndUser_Id(concertId, user.getId())
 				.orElseThrow(() -> new IllegalArgumentException("해당 찜 정보를 찾을 수 없습니다."));
 		likeRepository.delete(like);
+	}
+
+	public List<Bid> getBidHistory(User user) {
+		return bidRepository.findByUserWithAuctionAndConcert(user);
 	}
 }

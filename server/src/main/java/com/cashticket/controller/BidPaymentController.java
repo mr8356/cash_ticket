@@ -27,11 +27,12 @@ public class BidPaymentController {
 
     @GetMapping("/orders")
     public String createOrder(@CurrentUser User user,
-     @RequestParam String concertId,
-      @RequestParam String amount,
-       Model model) {
+                              @RequestParam String concertId,
+                              @RequestParam String amount,
+                              Model model,
+                              org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         try {
-            log.info("결제 페이지 요청 - 사용자: {}, 콘서트ID: {}, 금액: {}", 
+            log.info("결제 페이지 요청 - 사용자: {}, 콘서트ID: {}, 금액: {}",
                 user != null ? user.getId() : "null", concertId, amount);
             
             if (user == null) {
@@ -39,17 +40,31 @@ public class BidPaymentController {
                 return "redirect:/login";
             }
             
-            model.addAttribute("concertId", concertId);
-            model.addAttribute("amount", amount);
+            // 파라미터 유효성 검사 및 안전한 파싱
+            Long concertIdLong;
+            Integer amountInt;
+            try {
+                concertIdLong = Long.valueOf(concertId.trim());
+                amountInt = Integer.valueOf(amount.trim());
+                if (amountInt <= 0) throw new NumberFormatException("금액이 0 이하입니다.");
+            } catch (NumberFormatException e) {
+                log.error("파라미터 파싱 실패: concertId={}, amount={}", concertId, amount, e);
+                redirectAttributes.addFlashAttribute("error", "유효하지 않은 요청입니다.");
+                return "redirect:/auction/" + concertId;
+            }
+            
+            model.addAttribute("concertId", concertIdLong);
+            model.addAttribute("amount", amountInt);
             model.addAttribute("user", user);
             
-            log.info("결제 페이지 모델 설정 완료");
+            log.info("결제 페이지 모델 설정 완료 - 콘서트ID: {}, 금액: {}", concertIdLong, amountInt);
             return "payment/index";
             
         } catch (Exception e) {
-            log.error("결제 페이지 로드 중 오류 - 콘서트ID: {}, 금액: {}, 오류: {}", 
+            log.error("결제 페이지 로드 중 오류 - 콘서트ID: {}, 금액: {}, 오류: {}",
                 concertId, amount, e.getMessage(), e);
-            return "error";
+            redirectAttributes.addFlashAttribute("error", "알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            return "redirect:/auction/" + concertId;
         }
     }
 
