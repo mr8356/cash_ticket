@@ -108,6 +108,23 @@ public class AuctionService {
                 throw new AuctionException("경매가 종료되었거나 존재하지 않습니다.");
             }
 
+            // Redis에 경매 데이터가 없으면 초기화
+            Set<String> currentBids = redisTemplate.opsForZSet().range(auctionKey, -1, -1);
+            if (currentBids.isEmpty()) {
+                log.info("Redis에 경매 데이터 없음 - 초기화 진행 - 콘서트ID: {}", concertId);
+                
+                // DB에서 경매 정보 조회
+                Auction auction = auctionRepository.findByConcertId(concertId)
+                        .orElseThrow(() -> new AuctionException("경매를 찾을 수 없습니다: " + concertId));
+                
+                // Redis 초기화 (시작가 10,000원으로 설정)
+                redisTemplate.opsForZSet().add(auctionKey, "initial", 10000);
+                log.info("Redis 경매 데이터 초기화 완료 - 콘서트ID: {}, 시작가: 10000원", concertId);
+                
+                // 다시 현재 입찰 정보 조회
+                currentBids = redisTemplate.opsForZSet().range(auctionKey, -1, -1);
+            }
+
             // 입찰 횟수 확인
             String bidCountStr = redisTemplate.opsForValue().get(bidCountKey);
             int bidCount = bidCountStr != null ? Integer.parseInt(bidCountStr) : 0;
@@ -119,12 +136,6 @@ public class AuctionService {
             }
 
             // 현재 최고가 확인
-            Set<String> currentBids = redisTemplate.opsForZSet().range(auctionKey, -1, -1);
-            if (currentBids.isEmpty()) {
-                log.warn("경매 정보 없음 - 콘서트ID: {}", concertId);
-                throw new AuctionException("경매 정보를 찾을 수 없습니다.");
-            }
-
             Double currentHighestBid = redisTemplate.opsForZSet().score(auctionKey, currentBids.iterator().next());
             log.debug("현재 최고가: {}, 입찰 시도 금액: {}", currentHighestBid, bidAmount);
             
@@ -197,9 +208,20 @@ public class AuctionService {
             String auctionKey = AUCTION_KEY_PREFIX + concertId;
             Set<String> currentBids = redisTemplate.opsForZSet().range(auctionKey, -1, -1);
             
+            // Redis에 경매 데이터가 없으면 초기화
             if (currentBids.isEmpty()) {
-                log.debug("입찰 없음 - 콘서트ID: {}", concertId);
-                return 0;
+                log.info("Redis에 경매 데이터 없음 - 초기화 진행 - 콘서트ID: {}", concertId);
+                
+                // DB에서 경매 정보 조회
+                Auction auction = auctionRepository.findByConcertId(concertId)
+                        .orElseThrow(() -> new AuctionException("경매를 찾을 수 없습니다: " + concertId));
+                
+                // Redis 초기화 (시작가 10,000원으로 설정)
+                redisTemplate.opsForZSet().add(auctionKey, "initial", 10000);
+                log.info("Redis 경매 데이터 초기화 완료 - 콘서트ID: {}, 시작가: 10000원", concertId);
+                
+                // 다시 현재 입찰 정보 조회
+                currentBids = redisTemplate.opsForZSet().range(auctionKey, -1, -1);
             }
 
             Double highestBid = redisTemplate.opsForZSet().score(auctionKey, currentBids.iterator().next());
