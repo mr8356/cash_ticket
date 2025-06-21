@@ -10,6 +10,12 @@
             object-fit: cover;
             border-radius: 10px;
         }
+        .home-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -60,11 +66,20 @@
             </div>
 
             <!-- 버튼 -->
-            <div class="mt-4 text-end">
-                <a href="/concerts" class="btn btn-outline-secondary">← 콘서트 목록</a>
+            <div class="mt-4">
+                <a th:href="@{/concerts}" class="btn btn-outline-secondary">
+                    ← 콘서트 목록
+                </a>
             </div>
         </div>
     </div>
+</div>
+
+<!-- 홈 버튼 -->
+<div class="home-button">
+    <a th:href="@{/}" class="btn btn-primary rounded-circle p-3 shadow">
+        <i class="bi bi-house-door-fill"></i>
+    </a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
