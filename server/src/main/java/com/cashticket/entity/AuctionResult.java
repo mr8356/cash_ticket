@@ -27,6 +27,7 @@ public class AuctionResult {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private AuctionResultStatusEnum status = AuctionResultStatusEnum.WINNER;
 
     @Column(nullable = false)
