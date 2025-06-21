@@ -383,4 +383,22 @@ public class AuctionService {
             throw new BidException("입찰 단위는 1,000원이어야 합니다.");
         }
     }
+
+    // 결제 성공 후 실제 입찰 처리 메서드
+    @Transactional
+    public boolean processBidAfterPayment(Long concertId, Long userId, int bidAmount) {
+        try {
+            // 검증
+            validateBid(concertId, userId, bidAmount);
+            
+            // 실제 입찰 처리
+            return placeBid(concertId, userId, bidAmount);
+        } catch (AuctionException | BidException e) {
+            log.warn("결제 후 입찰 처리 실패 - 콘서트ID: {}, 사용자ID: {}, 사유: {}", concertId, userId, e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("결제 후 입찰 처리 중 오류 - 콘서트ID: {}, 사용자ID: {}, 오류: {}", concertId, userId, e.getMessage(), e);
+            throw new RuntimeException("입찰 처리 중 오류가 발생했습니다: " + e.getMessage(), e);
+        }
+    }
 } 
