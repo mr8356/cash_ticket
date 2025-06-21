@@ -20,14 +20,11 @@ public class Auction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "concert_id", nullable = false)
     private Concert concert;
-
     private Integer availableSeats;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AuctionStatusEnum status = AuctionStatusEnum.OPEN;
-
     private LocalDateTime startTime;
-
     private LocalDateTime endTime;
 } 
