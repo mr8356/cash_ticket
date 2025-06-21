@@ -102,6 +102,13 @@ public class UserController {
 		return "mypage/favorites";
 	}
 
+	@DeleteMapping("/mypage/favorites/{concertId}")
+	public String deleteFavorite(@PathVariable Long concertId, @CurrentUser User user) {
+		userService.deleteFavorite(concertId, user);
+		return "mypage/favorites";
+	}
+
+
 	@GetMapping("/me")
 	public ResponseEntity<?> getCurrentUser(@CurrentUser User user) {
 		return ResponseEntity.ok(user);
