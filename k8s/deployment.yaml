@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+  namespace: default
+spec:
+  selector: 
+    matchLabels: 
+      app: webapp
+  replicas: 4
+  template: # templates for the pods
+    metadata:
+      labels:
+        app: webapp
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+      - name: webapp
+        image: mr8356/cashticket_server:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 8080
+        env:
+          - name: SPRING_DATASOURCE_URL
+            value: jdbc:mysql://[RDS_ENDPOINT]:3306/[DATABASE_NAME]?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
+          - name: SPRING_DATASOURCE_USERNAME
+            value: [DB_USERNAME]
+          - name: SPRING_DATASOURCE_PASSWORD
+            value: "[DB_PASSWORD]"
+          - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+            value: com.mysql.cj.jdbc.Driver
+          - name: REDIS_HOST
+            value: [REDIS_HOST_IP]
+          - name: REDIS_PASSWORD
+            value: "[REDIS_PASSWORD]"
+          - name: HIBERNATE_DIALECT
+            value: org.hibernate.dialect.MySQLDialect
+          - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+            value: prometheus,health,info,metrics
+          - name: MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED
+            value: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cashticket-webapp
+  namespace: default
+  labels:
+    app: webapp
+spec:
+  selector:
+    app: webapp
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      nodePort: 30080
+  type: NodePort

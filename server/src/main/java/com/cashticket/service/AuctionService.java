@@ -2,6 +2,7 @@ package com.cashticket.service;
 
 import com.cashticket.entity.*;
 import com.cashticket.exception.AuctionException;
+import com.cashticket.exception.BidCountExceededException;
 import com.cashticket.exception.BidException;
 import com.cashticket.repository.AuctionRepository;
 import com.cashticket.repository.AuctionResultRepository;
@@ -138,8 +139,8 @@ public class AuctionService {
             log.debug("현재 입찰 횟수 - 사용자ID: {}, 횟수: {}/{}", userId, bidCount, MAX_BID_COUNT);
             
             if (bidCount >= MAX_BID_COUNT) {
-                log.warn("입찰 횟수 초과 - 사용자ID: {}, 횟수: {}", userId, bidCount);
-                throw new BidException("입찰 가능 횟수를 초과했습니다. (최대 " + MAX_BID_COUNT + "회)");
+                log.warn("입찰 횟수 초과 - 사용자ID: {}", userId);
+                throw new BidCountExceededException("입찰 가능 횟수(" + MAX_BID_COUNT + "회)를 모두 사용하셨습니다. 더 이상 입찰할 수 없습니다.");
             }
 
             // 사용자의 가장 최근 이전 입찰 삭제

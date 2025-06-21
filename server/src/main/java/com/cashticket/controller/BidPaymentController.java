@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.cashticket.exception.BidCountExceededException;
 
 
 // controller/BidPaymentController.java
@@ -31,6 +32,7 @@ public class BidPaymentController {
                               @RequestParam String amount,
                               Model model,
                               org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        Long concertIdLong = null; // try-catch 외부에서 사용하기 위해
         try {
             log.info("결제 페이지 요청 - 사용자: {}, 콘서트ID: {}, 금액: {}",
                 user != null ? user.getId() : "null", concertId, amount);
@@ -41,7 +43,6 @@ public class BidPaymentController {
             }
             
             // 파라미터 유효성 검사 및 안전한 파싱
-            Long concertIdLong;
             Integer amountInt;
             try {
                 concertIdLong = Long.valueOf(concertId.trim());
@@ -50,7 +51,21 @@ public class BidPaymentController {
             } catch (NumberFormatException e) {
                 log.error("파라미터 파싱 실패: concertId={}, amount={}", concertId, amount, e);
                 redirectAttributes.addFlashAttribute("error", "유효하지 않은 요청입니다.");
-                return "redirect:/auction/" + concertId;
+                return "redirect:/auction/" + (concertId != null ? concertId : "");
+            }
+
+            // 입찰 금액 사전 검증
+            try {
+                auctionService.validateBid(concertIdLong, user.getId(), amountInt);
+                log.info("입찰 금액 검증 성공 - 콘서트ID: {}, 사용자ID: {}, 금액: {}", concertIdLong, user.getId(), amountInt);
+            } catch (BidCountExceededException e) {
+                log.warn("입찰 횟수 초과 - concertId={}, userId={}", concertIdLong, user.getId());
+                redirectAttributes.addFlashAttribute("error", e.getMessage());
+                return "redirect:/auction/" + concertIdLong;
+            } catch (com.cashticket.exception.AuctionException | com.cashticket.exception.BidException e) {
+                log.warn("입찰 금액 검증 실패 - 콘서트ID: {}, 사유: {}", concertIdLong, e.getMessage());
+                redirectAttributes.addFlashAttribute("error", e.getMessage());
+                return "redirect:/auction/" + concertIdLong;
             }
             
             model.addAttribute("concertId", concertIdLong);
