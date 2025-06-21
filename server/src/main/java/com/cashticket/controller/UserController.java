@@ -102,7 +102,7 @@ public class UserController {
 	@DeleteMapping("/mypage/favorites/{concertId}")
 	public String deleteFavorite(@PathVariable Long concertId, @CurrentUser User user) {
 		userService.deleteFavorite(concertId, user);
-		return "mypage/favorites";
+		return "redirect:/users/mypage/favorites"; // [!] 이렇게 수정해야 합니다.
 	}
 
 	@GetMapping("/me")
