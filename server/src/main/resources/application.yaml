@@ -29,10 +29,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false  # SQL 로그 끄기
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false  # SQL 포맷팅 끄기
         dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.MySQLDialect}
         order_inserts: true
         order_updates: true
@@ -65,6 +65,19 @@ spring:
       path: /h2-console
       settings:
         web-allow-others: true
+
+# 로그 레벨 설정
+logging:
+  level:
+    root: INFO
+    com.cashticket: DEBUG  # 우리 애플리케이션 패키지는 DEBUG 레벨
+    org.springframework.web: DEBUG  # Spring Web DEBUG
+    org.hibernate.SQL: WARN  # SQL 로그 끄기
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN  # SQL 파라미터 로그 끄기
+    org.springframework.security: DEBUG  # Spring Security DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 # Spring Boot Actuator 설정
 management:

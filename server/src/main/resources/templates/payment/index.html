@@ -42,7 +42,7 @@
                 amount: AMOUNT,
                 orderId: 'auction-' + AUCTION_ID + '-' + Date.now(),
                 orderName: `경매 #${AUCTION_ID} 사전결제`,
-                customerName: /*[[${user.nickname}]]*/ '고객',
+                customerName: /*[[${user != null ? user.nickname : '고객'}]]*/ '고객',
                 successUrl: window.location.origin + `/api/auction/success?concertId=${AUCTION_ID}&amount=${AMOUNT}`,
                 failUrl: window.location.origin + '/api/auction/fail'
             });
