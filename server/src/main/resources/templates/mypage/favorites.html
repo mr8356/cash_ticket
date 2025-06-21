@@ -53,7 +53,7 @@
                     <div class="d-flex justify-content-between">
                         <a th:if="${concert.isAuction}" th:href="@{/auction/{id}(id=${concert.id})}" class="btn btn-sm btn-primary">경매 참여</a>
                         <a th:unless="${concert.isAuction}" th:href="@{/reserve/{id}(id=${concert.id})}" class="btn btn-sm btn-primary">예매하기</a>
-                        <form th:action="@{/users/mypage/favorites/delete/{concertID}(concertID=${concert.id})}" method="post" onsubmit="return confirm('정말로 찜 목록에서 삭제하시겠습니까?');">
+                        <form th:action="@{/users/mypage/favorites/delete/{concertId}(concertId=${concert.id})}" method="post" onsubmit="return confirm('정말로 찜 목록에서 삭제하시겠습니까?');">
                             <button type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
                         </form>
                     </div>
