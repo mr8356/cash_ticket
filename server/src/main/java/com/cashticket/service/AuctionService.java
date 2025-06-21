@@ -260,39 +260,43 @@ public class AuctionService {
 
             // 이미 종료된 경매인지 확인
             if (auction.getStatus() == AuctionStatusEnum.CLOSED) {
-                throw new AuctionException("이미 종료된 경매입니다.");
+                log.info("이미 종료된 경매입니다 - 콘서트ID: {}", concertId);
+                return true;
             }
 
             // 최종 입찰자들 정보 조회
             List<Long> winnerIds = getWinners(concertId);
-            if (winnerIds.isEmpty()) {
-                throw new AuctionException("입찰자가 없어 경매를 종료할 수 없습니다.");
-            }
-
-            // 최종 입찰가 조회
-            int finalBid = getCurrentHighestBid(concertId);
-
-            // Auction 엔티티 업데이트
+            
+            // Auction 엔티티 업데이트 (입찰자가 없어도 종료)
             auction.setStatus(AuctionStatusEnum.CLOSED);
             auctionRepository.save(auction);
+            
+            if (winnerIds.isEmpty()) {
+                log.info("입찰자가 없는 경매 종료 - 콘서트ID: {}", concertId);
+            } else {
+                log.info("경매 종료 - 콘서트ID: {}, 입찰자 수: {}", concertId, winnerIds.size());
+                
+                // 최종 입찰가 조회
+                int finalBid = getCurrentHighestBid(concertId);
 
-            // 각 승자에 대해 AuctionResult 엔티티 생성
-            for (int i = 0; i < winnerIds.size(); i++) {
-                final int seatNo = i + 1; // 좌석 번호는 1부터 순차적으로 할당
-                final Long winnerId = winnerIds.get(i);
-                
-                User winner = userRepository.findById(winnerId)
-                        .orElseThrow(() -> new AuctionException("승자를 찾을 수 없습니다: " + winnerId));
-                
-                AuctionResult result = AuctionResult.builder()
-                        .auction(auction)
-                        .user(winner)
-                        .finalBidAmount((long) finalBid)
-                        .status(AuctionResultStatusEnum.WINNER)
-                        .seatNo(seatNo)
-                        .build();
-                
-                auctionResultRepository.save(result);
+                // 각 승자에 대해 AuctionResult 엔티티 생성
+                for (int i = 0; i < winnerIds.size(); i++) {
+                    final int seatNo = i + 1; // 좌석 번호는 1부터 순차적으로 할당
+                    final Long winnerId = winnerIds.get(i);
+                    
+                    User winner = userRepository.findById(winnerId)
+                            .orElseThrow(() -> new AuctionException("승자를 찾을 수 없습니다: " + winnerId));
+                    
+                    AuctionResult result = AuctionResult.builder()
+                            .auction(auction)
+                            .user(winner)
+                            .finalBidAmount((long) finalBid)
+                            .status(AuctionResultStatusEnum.WINNER)
+                            .seatNo(seatNo)
+                            .build();
+                    
+                    auctionResultRepository.save(result);
+                }
             }
 
             // Redis 데이터 삭제

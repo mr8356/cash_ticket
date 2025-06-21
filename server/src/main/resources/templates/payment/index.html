@@ -30,20 +30,36 @@
 
 <script th:inline="javascript">
     const CLIENT_KEY = 'test_ck_5OWRapdA8dd9zMMqkWbY8o1zEqZK';
+    
+    // Thymeleaf에서 전달받은 값들을 안전하게 파싱
     const AUCTION_ID = /*[[${concertId}]]*/ 0;
-    const AMOUNT     = /*[[${amount}]]*/ 50000;
+    const AMOUNT_RAW = /*[[${amount}]]*/ 50000;
+    
+    // 안전한 파싱
+    const AUCTION_ID_PARSED = parseInt(AUCTION_ID) || 0;
+    const AMOUNT_PARSED = parseInt(AMOUNT_RAW) || 50000;
+
+    // 디버깅용 로그
+    console.log('AUCTION_ID (raw):', AUCTION_ID, typeof AUCTION_ID);
+    console.log('AUCTION_ID (parsed):', AUCTION_ID_PARSED, typeof AUCTION_ID_PARSED);
+    console.log('AMOUNT (raw):', AMOUNT_RAW, typeof AMOUNT_RAW);
+    console.log('AMOUNT (parsed):', AMOUNT_PARSED, typeof AMOUNT_PARSED);
 
     const tossPayments = TossPayments(CLIENT_KEY);
 
     // 카드 결제 버튼 클릭 시 결제 요청
     document.getElementById('pay-btn').onclick = async () => {
         try {
+            // Toss Payments가 자동으로 amount를 추가하므로 URL에는 concertId만 포함
+            const successUrl = window.location.origin + `/api/auction/success?concertId=${AUCTION_ID_PARSED}`;
+            console.log('Success URL:', successUrl);
+            
             await tossPayments.requestPayment('카드', {
-                amount: AMOUNT,
-                orderId: 'auction-' + AUCTION_ID + '-' + Date.now(),
-                orderName: `경매 #${AUCTION_ID} 사전결제`,
+                amount: AMOUNT_PARSED,
+                orderId: 'auction-' + AUCTION_ID_PARSED + '-' + Date.now(),
+                orderName: `경매 #${AUCTION_ID_PARSED} 사전결제`,
                 customerName: /*[[${user != null ? user.nickname : '고객'}]]*/ '고객',
-                successUrl: window.location.origin + `/api/auction/success?concertId=${AUCTION_ID}&amount=${AMOUNT}`,
+                successUrl: successUrl,
                 failUrl: window.location.origin + '/api/auction/fail'
             });
         } catch (error) {

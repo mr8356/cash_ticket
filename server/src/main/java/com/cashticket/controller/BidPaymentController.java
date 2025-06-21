@@ -54,28 +54,81 @@ public class BidPaymentController {
     }
 
     @GetMapping("/success")
-    public String success(@CurrentUser User user, @RequestParam String concertId, @RequestParam String amount) {
+    public String success(@CurrentUser User user, 
+                         @RequestParam String concertId, 
+                         @RequestParam(required = false) String amount,
+                         @RequestParam(required = false) String orderId,
+                         @RequestParam(required = false) String paymentKey) {
         try {
             if (user == null) {
                 log.error("사용자가 로그인되지 않음");
                 return "redirect:/login";
             }
             
+            log.info("결제 성공 콜백 - 사용자: {}, 콘서트ID: {}, 금액: {}, 주문ID: {}, 결제키: {}", 
+                user.getId(), concertId, amount, orderId, paymentKey);
+            
+            // 파라미터 유효성 검사
+            if (concertId == null || concertId.trim().isEmpty()) {
+                log.error("콘서트 ID가 비어있음");
+                return "redirect:/error?message=invalid_concert_id";
+            }
+            
+            // Toss Payments 파라미터 검증
+            if (paymentKey == null || paymentKey.trim().isEmpty()) {
+                log.error("결제키가 비어있음");
+                return "redirect:/error?message=invalid_payment";
+            }
+            
+            if (orderId == null || orderId.trim().isEmpty()) {
+                log.error("주문ID가 비어있음");
+                return "redirect:/error?message=invalid_order";
+            }
+            
+            // 안전한 파싱
+            Long concertIdLong;
+            Integer amountInt = null;
+            
+            try {
+                concertIdLong = Long.valueOf(concertId.trim());
+            } catch (NumberFormatException e) {
+                log.error("콘서트 ID 파싱 실패: {}", concertId, e);
+                return "redirect:/error?message=invalid_concert_id";
+            }
+            
+            // amount 파라미터가 있는 경우에만 파싱 (Toss Payments에서 전달된 값 사용)
+            if (amount != null && !amount.trim().isEmpty()) {
+                try {
+                    amountInt = Integer.valueOf(amount.trim());
+                    if (amountInt <= 0) {
+                        log.error("금액이 0 이하: {}", amountInt);
+                        return "redirect:/error?message=invalid_amount";
+                    }
+                } catch (NumberFormatException e) {
+                    log.error("금액 파싱 실패: {}", amount, e);
+                    return "redirect:/error?message=invalid_amount";
+                }
+            } else {
+                log.warn("금액 파라미터가 없음 - Toss Payments 검증 필요");
+                // TODO: Toss Payments API를 통한 결제 검증 로직 추가 필요
+                return "redirect:/error?message=payment_verification_required";
+            }
+            
             // 결제 성공 후 실제 입찰 처리
-            boolean success = auctionService.processBidAfterPayment(
-                Long.parseLong(concertId), 
-                user.getId(), 
-                Integer.parseInt(amount)
-            );
+            boolean success = auctionService.processBidAfterPayment(concertIdLong, user.getId(), amountInt);
             
             if (success) {
+                log.info("입찰 처리 성공 - 콘서트ID: {}, 사용자ID: {}, 금액: {}, 주문ID: {}", 
+                    concertIdLong, user.getId(), amountInt, orderId);
                 return "payment/success";
             } else {
+                log.warn("입찰 처리 실패 - 콘서트ID: {}, 사용자ID: {}, 금액: {}, 주문ID: {}", 
+                    concertIdLong, user.getId(), amountInt, orderId);
                 return "payment/fail";
             }
         } catch (Exception e) {
-            log.error("입찰 처리 실패 - 콘서트ID: {}, 사용자ID: {}, 금액: {}, 오류: {}", 
-                concertId, user != null ? user.getId() : "null", amount, e.getMessage(), e);
+            log.error("입찰 처리 중 예외 발생 - 콘서트ID: {}, 사용자ID: {}, 금액: {}, 주문ID: {}, 오류: {}", 
+                concertId, user != null ? user.getId() : "null", amount, orderId, e.getMessage(), e);
             return "error";
         }
     }
