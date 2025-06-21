@@ -6,12 +6,13 @@ import com.cashticket.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
 
-@RestController
+@Controller
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
@@ -19,6 +20,7 @@ public class AuthController {
     private final StringRedisTemplate redisTemplate;
 
     @PostMapping("/register")
+    @ResponseBody
     public ResponseEntity<?> register(@RequestParam String userId,
                                     @RequestParam String email,
                                     @RequestParam String password,
@@ -48,6 +50,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @ResponseBody
     public ResponseEntity<?> login(@RequestParam String userId, 
                                  @RequestParam String password,
                                  HttpSession session) {
@@ -65,6 +68,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @ResponseBody
     public ResponseEntity<?> logout(HttpSession session) {
         // Redis 세션에서 사용자 정보 삭제
         String sessionId = session.getId();
@@ -75,6 +79,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
+    @ResponseBody
     public ResponseEntity<?> getCurrentUser(@CurrentUser User user) {
         return ResponseEntity.ok(user);
     }

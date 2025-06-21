@@ -35,9 +35,9 @@ public class TicketService {
             return concertRepository.findAll();
         }
         return concertRepository.findAll().stream()
-                .filter(concert -> 
-                    concert.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
-                    concert.getArtist().toLowerCase().contains(keyword.toLowerCase()))
+                .filter(concert ->
+                        concert.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
+                                concert.getArtist().toLowerCase().contains(keyword.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -58,6 +58,14 @@ public class TicketService {
             likeRepository.save(newLike);
             return true; // 찜 추가됨
         }
+    }
+
+    // 단일 콘서트 찜 여부 확인
+    public boolean isConcertLikedByUser(Long concertId, Long userId) {
+        if (userId == null) {
+            return false;
+        }
+        return likeRepository.findByConcertIdAndUser_Id(concertId, userId).isPresent();
     }
 
     // TODO: 찜 여부 확인
